@@ -1,0 +1,2762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desafios Cognitivos</title>
+<style>
+/* ============================================================
+   BASE
+   ============================================================ */
+:root{
+  --bg:#0d1018;--panel:#141a26;--line:#232a3a;
+  --txt:#e8ecf5;--dim:#9aa4bb;--mut:#5a6478;
+  --gold:#f0b64a;--red:#d44a4a;--blue:#5b8ee0;
+  --green:#4ec28f;--purple:#9b7cf0;
+  --r:10px;--rl:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:"Nunito","Segoe UI",system-ui,sans-serif;
+  background:#000;color:var(--txt);overflow:hidden;
+  font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;}
+h1,h2,h3{font-weight:700;}
+
+/*TELAS*/
+.screen{display:none;position:fixed;inset:0;overflow-y:auto;}
+.screen.on{display:block;}
+
+/* MENU  ESTAÇÃO DOS DESAFIOS */
+#menu{
+  background:
+    radial-gradient(ellipse at 50% -20%,rgba(240,182,74,.15),transparent 60%),
+    radial-gradient(ellipse at 50% 120%,rgba(91,142,224,.10),transparent 55%),
+    linear-gradient(180deg,#0a0d16,#05070d);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:clamp(20px,4vh,60px) clamp(16px,3vw,40px);
+  min-height:100vh;
+}
+.signboard{
+  padding:14px 30px;
+  background:linear-gradient(180deg,#b98850 0%,#8b5e3c 40%,#6b4526 100%);
+  border:3px solid #4a2a10;border-radius:8px;
+  box-shadow:0 8px 0 #3a1e08,0 14px 30px rgba(0,0,0,.7),
+    inset 0 2px 0 rgba(255,255,255,.15);
+  text-align:center;position:relative;
+  margin-bottom:44px;
+  animation:sway 7s ease-in-out infinite;
+}
+@keyframes sway{0%,100%{transform:rotate(-.4deg);}50%{transform:rotate(.4deg);}}
+.signboard::before,.signboard::after{
+  content:"";position:absolute;top:-26px;width:2px;height:26px;background:#4a2a10;
+}
+.signboard::before{left:25%;}
+.signboard::after{right:25%;}
+.signboard h1{
+  font-family:Georgia,serif;
+  font-size:clamp(24px,4vw,40px);
+  color:#f7e4b8;letter-spacing:3px;
+  text-shadow:0 3px 0 #3a1e08;
+}
+.signboard p{
+  font-size:clamp(10px,1.2vw,12px);
+  color:#d4b078;letter-spacing:4px;text-transform:uppercase;
+  margin-top:6px;font-weight:600;
+}
+
+.hall{
+  display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+  max-width:1100px;margin-bottom:32px;
+}
+.zone{
+  width:170px;height:230px;
+  border-radius:12px 12px 0 0;
+  border:2px solid rgba(255,255,255,.08);
+  cursor:pointer;overflow:hidden;position:relative;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:16px 12px 12px;
+  transition:transform .25s,filter .25s,box-shadow .25s;
+  filter:brightness(.78) saturate(.9);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.5),0 8px 0 rgba(0,0,0,.4);
+}
+.zone:hover{transform:translateY(-8px);filter:brightness(1.1);}
+.zone-num{
+  font-family:monospace;font-size:10px;color:rgba(255,255,255,.55);
+  letter-spacing:1.5px;align-self:flex-start;
+}
+.zone-emoji{
+  font-size:48px;text-align:center;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));
+  transition:transform .3s;
+}
+.zone:hover .zone-emoji{transform:scale(1.15);}
+.zone-info{text-align:left;}
+.zone-name{font-size:14px;font-weight:700;letter-spacing:-.2px;}
+.zone-focus{
+  font-family:monospace;font-size:9.5px;color:rgba(255,255,255,.65);
+  margin-top:4px;letter-spacing:.5px;text-transform:uppercase;
+}
+.zone.shop{background:linear-gradient(180deg,#3a2a1a,#1a1208);border-color:rgba(240,182,74,.3);}
+.zone.frog{background:linear-gradient(180deg,#2a4a2a,#0e2010);border-color:rgba(78,194,143,.3);}
+.zone.station{background:linear-gradient(180deg,#3a1a1a,#1a0808);border-color:rgba(212,74,74,.3);}
+.zone.rule{background:linear-gradient(180deg,#1a2a4a,#08101e);border-color:rgba(91,142,224,.3);}
+.zone.stroop{background:linear-gradient(180deg,#3a1a4a,#180820);border-color:rgba(155,124,240,.3);}
+.zone:hover.shop{box-shadow:inset 0 0 40px rgba(240,182,74,.2),0 12px 0 rgba(0,0,0,.4);}
+.zone:hover.frog{box-shadow:inset 0 0 40px rgba(78,194,143,.2),0 12px 0 rgba(0,0,0,.4);}
+.zone:hover.station{box-shadow:inset 0 0 40px rgba(212,74,74,.2),0 12px 0 rgba(0,0,0,.4);}
+.zone:hover.rule{box-shadow:inset 0 0 40px rgba(91,142,224,.2),0 12px 0 rgba(0,0,0,.4);}
+.zone:hover.stroop{box-shadow:inset 0 0 40px rgba(155,124,240,.2),0 12px 0 rgba(0,0,0,.4);}
+
+.menu-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+
+/* BOTÕES*/
+.wood{
+  padding:10px 20px;
+  background:linear-gradient(180deg,#a87a4a,#7a5230);
+  border:2px solid #4a2a10;border-radius:6px;
+  color:#f7e4b8;font-size:13px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  box-shadow:0 4px 0 #3a1e08;
+  transition:transform .12s,box-shadow .12s;
+}
+.wood:hover{transform:translateY(-1px);box-shadow:0 5px 0 #3a1e08;}
+.wood:active{transform:translateY(3px);box-shadow:0 1px 0 #3a1e08;}
+.wood.gold{
+  background:linear-gradient(180deg,#f0b64a,#c98a1f);
+  border-color:#8a5a10;color:#2a1a04;
+  box-shadow:0 4px 0 #6a4410;
+}
+.wood.gold:hover{box-shadow:0 5px 0 #6a4410;}
+
+/*  telas simples (como funciona, histórico, config) */
+.simple{
+  background:linear-gradient(180deg,#0e1220,#06080e);
+  padding:clamp(24px,4vw,48px) clamp(16px,3vw,32px);
+}
+.panel{
+  max-width:820px;margin:0 auto;
+  padding:clamp(20px,3vw,28px);
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:3px solid #8b5e3c;border-radius:6px;
+  box-shadow:0 8px 0 #5a3a1e,0 20px 40px rgba(0,0,0,.6);
+  color:#2a1a10;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;margin-bottom:18px;
+  padding-bottom:14px;border-bottom:2px dashed rgba(122,34,34,.3);
+}
+.panel-head h2{font-family:Georgia,serif;font-size:20px;color:#7a2222;letter-spacing:1px;}
+.panel .hint{font-size:13.5px;line-height:1.6;color:#3a2a1a;margin-bottom:14px;}
+.panel .step{
+  display:flex;gap:12px;padding:8px 0;
+  border-bottom:1px dashed rgba(139,94,60,.25);
+  font-size:13px;color:#3a2a1a;
+}
+.panel .step:last-child{border-bottom:none;}
+.panel .step .n{
+  flex:0 0 24px;height:24px;background:#7a2222;color:#f4ecd6;
+  border-radius:50%;display:grid;place-items:center;
+  font-weight:800;font-size:11px;
+}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:20px;}
+
+/*  JOGO */
+#game{background:#0a0d14;}
+.scene{position:absolute;inset:0;overflow:hidden;transition:background .4s;}
+.scene.shop{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(240,182,74,.18),transparent 55%),
+    linear-gradient(180deg,#3a2a1a 0%,#1a1208 60%,#0e0a04 100%);
+}
+.scene.shop::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;height:35%;
+  background:
+    repeating-linear-gradient(90deg,rgba(240,182,74,.06) 0 3px,transparent 3px 40px),
+    linear-gradient(180deg,transparent,rgba(240,182,74,.05));
+  -webkit-mask-image:linear-gradient(180deg,transparent,black 40%);
+          mask-image:linear-gradient(180deg,transparent,black 40%);
+}
+.scene.frog{
+  background:
+    radial-gradient(ellipse at 50% -20%,rgba(120,200,150,.20),transparent 55%),
+    radial-gradient(ellipse at 50% 120%,rgba(30,80,40,.35),transparent 60%),
+    linear-gradient(180deg,#14261a 0%,#0a1810 60%,#050a06 100%);
+}
+.scene.frog::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;height:28%;
+  background:
+    radial-gradient(circle at 20% 60%,rgba(78,194,143,.08) 0 40px,transparent 42px),
+    radial-gradient(circle at 75% 45%,rgba(78,194,143,.06) 0 50px,transparent 52px),
+    repeating-linear-gradient(80deg,rgba(78,194,143,.08) 0 2px,transparent 2px 12px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,black 40%);
+          mask-image:linear-gradient(180deg,transparent,black 40%);
+}
+.scene.station{
+  background:
+    radial-gradient(ellipse at 50% 100%,rgba(212,74,74,.15),transparent 55%),
+    linear-gradient(180deg,#1a1a2a 0%,#2a1818 40%,#0e0808 100%);
+}
+.scene.station::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;height:22%;
+  background:repeating-linear-gradient(90deg,rgba(212,74,74,.22) 0 8px,transparent 8px 26px);
+  -webkit-mask-image:linear-gradient(180deg,transparent 20%,black 100%);
+          mask-image:linear-gradient(180deg,transparent 20%,black 100%);
+}
+.scene.rule{
+  background:
+    radial-gradient(ellipse at 50% 100%,rgba(91,142,224,.16),transparent 55%),
+    linear-gradient(180deg,#0e1626 0%,#08101e 60%,#040610 100%);
+}
+.scene.rule::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;height:32%;
+  background-image:
+    linear-gradient(rgba(91,142,224,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,142,224,.06) 1px,transparent 1px);
+  background-size:34px 34px;
+  -webkit-mask-image:linear-gradient(180deg,transparent,black 60%);
+          mask-image:linear-gradient(180deg,transparent,black 60%);
+}
+.scene.stroop{
+  background:
+    radial-gradient(circle at 18% 20%,rgba(212,74,74,.14),transparent 40%),
+    radial-gradient(circle at 82% 25%,rgba(91,142,224,.14),transparent 40%),
+    radial-gradient(circle at 30% 82%,rgba(78,194,143,.12),transparent 45%),
+    radial-gradient(circle at 78% 78%,rgba(240,192,74,.12),transparent 45%),
+    linear-gradient(180deg,#14101a 0%,#08060d 100%);
+}
+
+.hud{position:absolute;inset:0;z-index:20;pointer-events:none;}
+.hud > *{pointer-events:auto;}
+.hud-exit{
+  position:absolute;top:14px;left:14px;
+  padding:7px 14px;
+  background:linear-gradient(180deg,#a87a4a,#7a5230);
+  border:2px solid #4a2a10;border-radius:5px;
+  color:#f7e4b8;font-size:11px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  box-shadow:0 3px 0 #3a1e08;
+}
+.hud-exit:hover{transform:translateY(-1px);}
+.hud-trail{
+  position:absolute;top:14px;right:14px;
+  display:flex;gap:6px;padding:5px 10px;
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;
+}
+.tdot{
+  width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;font-size:13px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  filter:grayscale(.8) brightness(.6);
+  transition:all .25s;
+}
+.tdot.done{filter:none;background:rgba(78,194,143,.2);border-color:rgba(78,194,143,.5);}
+.tdot.active{
+  filter:none;background:rgba(240,182,74,.25);
+  border-color:rgba(240,182,74,.7);
+  box-shadow:0 0 12px rgba(240,182,74,.6);
+  animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+
+.stage{
+  position:absolute;inset:0;z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:64px 20px 24px;
+  gap:16px;text-align:center;
+  overflow-y:auto;
+}
+
+/*placa das instruções */
+.plate{
+  max-width:600px;width:100%;
+  padding:22px 26px;
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:3px solid #8b5e3c;border-radius:6px;
+  color:#2a1a10;text-align:left;
+  box-shadow:0 8px 0 #5a3a1e,0 14px 30px rgba(0,0,0,.6);
+  transform:rotate(-.8deg);
+  position:relative;
+}
+.plate::before{
+  content:"";position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-3deg);
+  width:100px;height:20px;background:rgba(240,230,180,.85);
+  border:1px solid rgba(140,110,60,.3);
+}
+.plate h3{
+  font-family:Georgia,serif;font-size:16px;color:#7a2222;
+  letter-spacing:1px;text-transform:uppercase;
+  padding-bottom:10px;margin-bottom:12px;
+  border-bottom:2px dashed rgba(122,34,34,.3);
+}
+.plate .step{
+  display:flex;gap:10px;padding:6px 0;font-size:13px;
+  color:#3a2a1a;line-height:1.5;
+}
+.plate .step .n{
+  flex:0 0 22px;height:22px;border-radius:50%;
+  background:#7a2222;color:#f4ecd6;
+  display:grid;place-items:center;font-size:11px;font-weight:800;
+}
+.plate .go{margin-top:18px;display:flex;justify-content:flex-end;}
+
+/*placa de fase */
+.phase{
+  max-width:620px;width:100%;
+  padding:10px 18px;border-radius:8px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.1);
+  backdrop-filter:blur(6px);
+}
+.phase .tag{
+  font-size:11px;letter-spacing:1.5px;
+  color:var(--gold);text-transform:uppercase;font-weight:700;
+}
+.phase.frog .tag{color:var(--green);}
+.phase.station .tag{color:#f08a8a;}
+.phase.rule .tag{color:var(--blue);}
+.phase.stroop .tag{color:var(--purple);}
+.phase .txt{font-size:13.5px;color:var(--dim);margin-top:3px;}
+.phase .txt strong{color:var(--txt);}
+
+/*contagem */
+.cd{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.cd-num{
+  font-size:clamp(80px,16vw,150px);font-weight:900;
+  color:var(--gold);line-height:1;
+  text-shadow:0 6px 0 rgba(0,0,0,.5),0 0 40px rgba(240,182,74,.5);
+  animation:pop .5s cubic-bezier(.2,1.4,.5,1) both;
+}
+.cd-num.go{font-size:clamp(38px,7vw,64px);color:var(--green);letter-spacing:4px;}
+.cd-lbl{
+  font-family:monospace;font-size:11px;
+  letter-spacing:2px;color:var(--mut);text-transform:uppercase;
+}
+@keyframes pop{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
+
+/*JOGO 1 / LISTA */
+.list-paper{
+  max-width:340px;width:100%;
+  padding:20px;
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:2px solid #8b5e3c;border-radius:3px;
+  box-shadow:0 8px 0 #5a3a1e,0 12px 30px rgba(0,0,0,.6);
+  color:#2a1a10;text-align:left;
+  transform:rotate(-1.5deg);
+  font-family:Georgia,serif;
+  position:relative;
+}
+.list-paper::before{
+  content:"";position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-4deg);
+  width:110px;height:20px;background:rgba(240,230,180,.85);
+  border:1px solid rgba(140,110,60,.3);
+}
+.list-paper h4{
+  font-size:16px;color:#7a2222;letter-spacing:2px;
+  text-transform:uppercase;text-align:center;
+  padding-bottom:8px;margin-bottom:10px;
+  border-bottom:2px dashed rgba(122,34,34,.3);
+}
+.list-row{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 0;font-size:15px;font-weight:600;
+  border-bottom:1px dashed rgba(120,90,50,.25);
+}
+.list-row:last-child{border-bottom:none;}
+.list-row .box{
+  width:16px;height:16px;border:1.5px solid #7a2222;border-radius:2px;flex-shrink:0;
+}
+.timer-wrap{
+  width:100%;max-width:600px;
+  display:flex;align-items:center;gap:10px;
+  padding:8px 14px;
+  background:rgba(0,0,0,.5);border:2px solid #8b5e3c;border-radius:20px;
+}
+.timer-bar{
+  flex:1;height:8px;border-radius:4px;
+  background:rgba(0,0,0,.4);overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);
+}
+.timer-fill{
+  height:100%;background:linear-gradient(90deg,#f0b64a,#d44a4a);
+  border-radius:4px;
+}
+.item-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));
+  gap:10px;width:100%;max-width:640px;
+}
+.item{
+  padding:12px 6px;border-radius:8px;
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:2px solid #8b5e3c;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;user-select:none;
+  box-shadow:0 4px 0 #5a3a1e;
+  transition:transform .12s,box-shadow .12s;
+  animation:pop .25s cubic-bezier(.2,1.3,.5,1) both;
+}
+.item:hover{transform:translateY(-2px);box-shadow:0 6px 0 #5a3a1e;}
+.item.sel{
+  background:linear-gradient(180deg,#ffe8a0,#f0d060);
+  box-shadow:0 4px 0 #8a5a10,0 0 20px rgba(240,200,60,.5);
+  transform:translateY(-4px);
+}
+.item .em{font-size:28px;line-height:1;}
+.item .nm{
+  font-family:Georgia,serif;font-size:10.5px;font-weight:700;
+  color:#2a1a10;letter-spacing:.2px;
+}
+
+/* JOGO 2 / SAPO */
+.animal-zone{
+  position:relative;width:100%;max-width:600px;
+  min-height:280px;
+  display:grid;place-items:center;
+}
+.animal-svg{
+  width:clamp(110px,15vw,150px);height:auto;
+  animation:hop .3s cubic-bezier(.2,1.5,.5,1) both;
+  filter:drop-shadow(0 14px 20px rgba(0,0,0,.5));
+  cursor:pointer;
+  transition:transform .15s;
+  font-size:clamp(110px,15vw,150px);line-height:1;
+}
+.animal-svg.no-click{cursor:default;}
+.animal-svg.catchable:hover{transform:scale(1.08);}
+@keyframes hop{
+  0%{opacity:0;transform:translateY(-24px) scale(.6);}
+  60%{opacity:1;transform:translateY(0) scale(1.08);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+.wood-mission{
+  padding:14px 24px;
+  background:linear-gradient(180deg,#a87a4a,#7a5230);
+  border:3px solid #5a3a1e;border-radius:6px;
+  box-shadow:0 6px 0 #4a2a10,0 10px 20px rgba(0,0,0,.5);
+  color:#f7e4b8;font-family:Georgia,serif;
+  max-width:560px;width:100%;text-align:center;
+  position:relative;
+}
+.wood-mission::before,.wood-mission::after{
+  content:"";position:absolute;top:50%;width:10px;height:10px;
+  background:radial-gradient(circle,#3a1a04,#1a0a04);
+  border-radius:50%;transform:translateY(-50%);
+}
+.wood-mission::before{left:10px;}
+.wood-mission::after{right:10px;}
+.wood-mission .tag{
+  font-size:10px;letter-spacing:2px;color:#c9a060;
+  text-transform:uppercase;margin-bottom:4px;
+}
+.wood-mission .txt{font-size:15px;font-weight:700;letter-spacing:.3px;}
+
+/* JOGO 3 — ESTAÇÃO */
+.station-board{
+  max-width:580px;width:100%;
+  padding:16px 20px;
+  background:linear-gradient(180deg,#0a0a0a,#1a1010);
+  border:4px solid #4a1010;border-radius:6px;
+  box-shadow:0 6px 0 #2a0808,inset 0 0 20px rgba(240,192,64,.1),
+    0 0 30px rgba(240,192,64,.15);
+  color:#f0c040;font-family:monospace;text-align:left;
+  position:relative;
+}
+.station-board::before{
+  content:"";position:absolute;top:8px;right:10px;
+  width:6px;height:6px;border-radius:50%;background:#f0c040;
+  box-shadow:0 0 8px #f0c040;animation:blink 1.4s steps(2) infinite;
+}
+@keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:.2;}}
+.station-board .head{
+  font-size:10px;letter-spacing:2px;color:#8a6a20;
+  text-transform:uppercase;padding-bottom:6px;margin-bottom:8px;
+  border-bottom:1px dashed rgba(240,192,64,.2);
+}
+.station-board .row{
+  display:flex;gap:10px;padding:3px 0;font-size:13px;
+}
+.station-board .row .k{color:#8a6a20;min-width:80px;}
+.station-board .row .v{color:#f0e090;font-weight:700;}
+
+.ticket-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:10px;width:100%;max-width:760px;
+}
+.ticket{
+  padding:12px 14px;
+  background:linear-gradient(180deg,#f4ecd6,#ddd0a4);
+  border:2px solid #8b5e3c;border-radius:4px;
+  box-shadow:0 5px 0 #5a3a1e;
+  text-align:left;cursor:pointer;user-select:none;
+  transition:transform .12s,box-shadow .12s;
+  color:#2a1a10;position:relative;
+  animation:pop .22s ease both;
+}
+.ticket::before,.ticket::after{
+  content:"";position:absolute;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;border-radius:50%;
+  background:#0a0d14;
+}
+.ticket::before{left:-1px;}
+.ticket::after{right:-1px;}
+.ticket:hover{transform:translateY(-2px);box-shadow:0 7px 0 #5a3a1e;}
+.ticket.sel{
+  background:linear-gradient(180deg,#d4e8c4,#b8d4a0);
+  box-shadow:0 5px 0 #5a3a1e,inset 0 0 0 3px #4ec28f;
+  transform:translateY(-3px);
+}
+.ticket .th{
+  font-family:Georgia,serif;font-size:9px;letter-spacing:2px;
+  color:#7a2222;text-transform:uppercase;
+  padding-bottom:5px;margin-bottom:6px;
+  border-bottom:1px dashed rgba(122,34,34,.3);
+}
+.ticket .td{
+  font-family:Georgia,serif;font-size:15px;font-weight:800;
+  color:#2a1a10;letter-spacing:.4px;margin-bottom:5px;
+}
+.ticket .tm{
+  font-family:monospace;font-size:10.5px;color:#5a4a3a;line-height:1.6;
+}
+.ticket .tm .k{color:#8a7a5a;margin-right:4px;}
+
+/* JOGO 4 — BANCADA */
+.bench{
+  max-width:640px;width:100%;
+  padding:20px;border-radius:var(--rl);
+  background:rgba(8,16,30,.85);
+  border:1px solid rgba(91,142,224,.25);
+  backdrop-filter:blur(6px);
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.rule-strip{
+  width:100%;padding:10px 16px;
+  background:rgba(91,142,224,.08);
+  border:1px solid rgba(91,142,224,.28);border-radius:8px;
+  display:flex;align-items:center;gap:12px;
+}
+.rule-strip .k{
+  font-family:monospace;font-size:10px;letter-spacing:1.5px;
+  color:var(--blue);text-transform:uppercase;flex-shrink:0;
+}
+.rule-strip .v{font-size:13px;font-weight:600;color:var(--txt);}
+.shape-show{
+  font-size:clamp(80px,14vw,120px);line-height:1;
+  animation:pop .22s cubic-bezier(.2,1.4,.5,1) both;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.55));
+}
+.tray-row{display:flex;gap:12px;justify-content:center;width:100%;}
+.tray{
+  flex:1;max-width:260px;
+  padding:18px 14px;border-radius:10px;
+  font-size:14px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:transform .12s,filter .12s;
+  color:rgba(255,255,255,.92);
+}
+.tray .dir{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.55);}
+.tray.l{
+  background:linear-gradient(180deg,#3b7dd8,#2a5aa0);
+  border:3px solid #1a3a70;
+  box-shadow:0 6px 0 #1a3a70,inset 0 4px 0 rgba(255,255,255,.15);
+}
+.tray.r{
+  background:linear-gradient(180deg,#8b5cf6,#6a3ac6);
+  border:3px solid #4a2a96;
+  box-shadow:0 6px 0 #4a2a96,inset 0 4px 0 rgba(255,255,255,.15);
+}
+.tray:hover{filter:brightness(1.15);}
+.tray:active{transform:translateY(3px);box-shadow:0 3px 0 #1a3a70;}
+.bench-opts{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(105px, 1fr));
+  gap:10px; width:100%;
+}
+.bench-opt{
+  padding:14px 8px; border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-size:13px; font-weight:700;
+  color:#e8ecf5;
+  background:rgba(8,16,30,.9);
+  border:2px solid rgba(91,142,224,.3);
+  box-shadow:0 4px 0 rgba(0,0,0,.4);
+  transition:transform .12s, border-color .12s, filter .12s;
+  cursor:pointer; user-select:none;
+}
+.bench-opt:hover{transform:translateY(-2px); border-color:rgba(91,142,224,.75); filter:brightness(1.18);}
+.bench-opt:active{transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.4);}
+.bench-opt .sym{font-size:24px; line-height:1;}
+.bench-opt .kb{
+  font-family:monospace; font-size:10px;
+  border:1.5px solid rgba(91,142,224,.5); border-radius:3px;
+  padding:1px 5px; color:rgba(91,142,224,.95);
+}
+/*JOGO 5 — STROOP */
+.canvas{
+  padding:64px 40px 24px;
+  background:linear-gradient(180deg,#fffef5,#f0e8d0);
+  border:3px solid #8b5e3c;border-radius:2px;
+  box-shadow:0 8px 0 #5a3a1e,0 14px 30px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  transform:rotate(-1.5deg);
+  position:relative;
+  max-width:520px;
+  overflow:hidden;
+}
+.canvas::before{
+  content:"AMOSTRA DE TINTA";
+  position:absolute;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:monospace;
+  font-size:9px;
+  letter-spacing:2px;
+  color:#8a7a5a;
+  white-space:nowrap;
+  z-index:2;
+}
+
+.canvas .canvas-ink{
+  position:absolute;
+  left:0; right:0; top:0;
+  height:0%;
+  border-radius:0 0 14px 14px;
+  pointer-events:none;
+  opacity:0;
+  z-index:0;
+}
+.canvas .canvas-ink::after{
+  content:"";
+  position:absolute;
+  left:0; right:0;
+  bottom:-8px;
+  height:16px;
+  background:inherit;
+  -webkit-mask-image:
+    radial-gradient(circle at 14% 0, black 7px, transparent 8px),
+    radial-gradient(circle at 38% 0, black 10px, transparent 11px),
+    radial-gradient(circle at 62% 0, black 6px, transparent 7px),
+    radial-gradient(circle at 86% 0, black 9px, transparent 10px);
+  -webkit-mask-size:26% 100%;
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-position:0 0, 33% 0, 66% 0, 100% 0;
+          mask-image:
+    radial-gradient(circle at 14% 0, black 7px, transparent 8px),
+    radial-gradient(circle at 38% 0, black 10px, transparent 11px),
+    radial-gradient(circle at 62% 0, black 6px, transparent 7px),
+    radial-gradient(circle at 86% 0, black 9px, transparent 10px);
+          mask-size:26% 100%;
+          mask-repeat:no-repeat;
+          mask-position:0 0, 33% 0, 66% 0, 100% 0;
+  opacity:.9;
+}
+.canvas .stroop-word{ position:relative; z-index:1; }
+
+@keyframes inkDrip{
+  0%   { height:0%;   opacity:0;   }
+  10%  { height:8%;   opacity:.55; }
+  100% { height:100%; opacity:.75; }
+}
+.stroop-word{
+  font-weight:900;letter-spacing:5px;
+  font-size:clamp(38px,8vw,68px);
+  text-transform:uppercase;line-height:1;
+  animation:pop .2s cubic-bezier(.2,1.4,.5,1) both;
+}
+.paint-row{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;width:100%;max-width:640px;
+}
+.paint{
+  padding:14px 10px;border-radius:6px;
+  background:linear-gradient(180deg,#fffef5,#e8dcc0);
+  border:3px solid #8b5e3c;
+  box-shadow:0 5px 0 #5a3a1e;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;user-select:none;color:#2a1a10;
+  font-weight:700;font-size:13px;letter-spacing:.5px;
+  transition:transform .12s,box-shadow .12s;
+}
+.paint:hover{transform:translateY(-2px);box-shadow:0 7px 0 #5a3a1e;}
+.paint:active{transform:translateY(3px);box-shadow:0 2px 0 #5a3a1e;}
+.paint .sw{
+  width:30px;height:30px;border-radius:50%;
+  box-shadow:inset -4px -4px 0 rgba(0,0,0,.2),inset 4px 4px 0 rgba(255,255,255,.3);
+}
+.paint .kb{
+  font-family:monospace;font-size:10px;
+  border:1.5px solid #8b5e3c;border-radius:3px;
+  padding:1px 5px;color:#7a5230;
+}
+
+/* resultados */
+.report{
+  max-width:660px;width:100%;
+  padding:26px 30px;
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:2px solid #8b5e3c;border-radius:4px;
+  box-shadow:0 10px 0 #5a3a1e,0 20px 50px rgba(0,0,0,.6);
+  color:#2a1a10;text-align:left;
+  transform:rotate(-.5deg);position:relative;
+}
+.report::before{
+  content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(3deg);
+  width:130px;height:22px;background:rgba(240,230,180,.85);
+  border:1px solid rgba(140,110,60,.3);
+}
+.report-head{
+  display:flex;align-items:center;gap:14px;
+  padding-bottom:14px;margin-bottom:16px;
+  border-bottom:2px dashed rgba(122,34,34,.3);
+}
+.report-head .ic{font-size:34px;}
+.report-head h3{font-family:Georgia,serif;font-size:18px;color:#7a2222;letter-spacing:1px;}
+.report-head .sub{font-family:monospace;font-size:10.5px;color:#5a4a3a;margin-top:3px;}
+.report-head .acc{
+  margin-left:auto;font-family:Georgia,serif;
+  font-size:30px;font-weight:900;color:#7a2222;
+}
+.rstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px;}
+.rstat{
+  padding:10px 12px;background:rgba(255,255,255,.35);
+  border:1.5px solid rgba(139,94,60,.4);border-radius:4px;
+}
+.rstat .k{font-family:monospace;font-size:9.5px;color:#7a5230;letter-spacing:1px;text-transform:uppercase;}
+.rstat .v{font-family:Georgia,serif;font-size:17px;font-weight:900;margin-top:3px;}
+.rstat .v.g{color:#2a7a3a;}
+.rstat .v.b{color:#a82a2a;}
+.rextra{
+  display:flex;justify-content:space-between;gap:12px;
+  padding:8px 12px;background:rgba(255,255,255,.25);
+  border-bottom:1px dashed rgba(139,94,60,.3);
+  font-size:12.5px;
+}
+.rextra:last-child{border-bottom:none;}
+.rextra .k{color:#5a4a3a;}
+.rextra .v{font-family:monospace;font-weight:700;color:#2a1a10;}
+
+/* historico */
+.notebook{
+  max-width:780px;width:100%;margin:0 auto;
+  padding:24px;
+  background:linear-gradient(180deg,#3a2a1a,#2a1a0e);
+  border:4px solid #8b5e3c;border-radius:6px;
+  box-shadow:0 8px 0 #1a0e04,0 20px 40px rgba(0,0,0,.6);
+}
+.notebook h2{
+  font-family:Georgia,serif;font-size:20px;color:#f0b64a;
+  letter-spacing:2px;text-transform:uppercase;
+  padding-bottom:14px;margin-bottom:16px;
+  border-bottom:3px double #8b5e3c;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;
+}
+.note{
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:2px solid #8b5e3c;border-radius:4px;
+  padding:12px 16px;margin-bottom:8px;
+  color:#2a1a10;box-shadow:0 3px 0 #5a3a1e;
+}
+.note summary{
+  cursor:pointer;list-style:none;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-size:13.5px;
+}
+.note summary::-webkit-details-marker{display:none;}
+.note-code{
+  font-family:monospace;font-weight:700;
+  background:rgba(122,34,34,.1);padding:2px 8px;border-radius:3px;
+}
+.note-date{font-family:monospace;font-size:11px;color:#7a5230;}
+.note-acc{
+  margin-left:auto;font-family:Georgia,serif;
+  font-size:14px;font-weight:900;color:#7a2222;
+}
+.note-body{padding:12px 0 4px;margin-top:10px;border-top:1px dashed rgba(122,34,34,.3);}
+.note-row{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 0;font-size:12.5px;
+  border-bottom:1px dashed rgba(139,94,60,.2);
+}
+.note-row:last-child{border-bottom:none;}
+.note-row .v{margin-left:auto;font-family:monospace;font-weight:700;}
+.empty{text-align:center;padding:40px 20px;color:#c9a878;font-size:13px;}
+
+/* modal de açoes */
+.modal-bg{
+  position:fixed;inset:0;z-index:200;display:none;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.on{display:flex;}
+.modal-box{
+  max-width:420px;width:100%;padding:24px;
+  background:linear-gradient(180deg,#f4ecd6,#e2d2a8);
+  border:3px solid #8b5e3c;border-radius:6px;
+  color:#2a1a10;box-shadow:0 8px 0 #5a3a1e,0 20px 40px rgba(0,0,0,.7);
+  position:relative;
+}
+.modal-box::before{
+  content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-3deg);
+  width:100px;height:20px;background:rgba(240,230,180,.85);
+  border:1px solid rgba(140,110,60,.3);
+}
+.modal-box h3{font-family:Georgia,serif;font-size:17px;color:#7a2222;letter-spacing:1px;margin-bottom:8px;}
+.modal-box p{font-size:13px;color:#3a2a1a;line-height:1.6;margin-bottom:14px;}
+.modal-box input{
+  width:100%;padding:10px 14px;
+  background:#fffef5;border:2px solid #8b5e3c;border-radius:4px;
+  color:#2a1a10;font-size:14px;font-family:monospace;outline:none;
+}
+.modal-box input:focus{border-color:#7a2222;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+
+/* feedback flash */
+.ff{position:fixed;inset:0;pointer-events:none;z-index:150;
+  animation:ffOut .5s ease-out forwards;}
+.ff.ok{box-shadow:inset 0 0 0 8px rgba(78,194,143,.55);}
+.ff.bad{box-shadow:inset 0 0 0 8px rgba(212,74,74,.55);}
+@keyframes ffOut{to{opacity:0;}}
+
+/* novas regras (card) */
+.rule-flash{
+  position:absolute;inset:0;z-index:15;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  animation:fadeIO 1.5s ease both;pointer-events:none;
+}
+.rule-flash .ban{
+  padding:20px 40px;
+  background:linear-gradient(180deg,#f0b64a,#c98a1f);
+  border:4px solid #6a4410;border-radius:10px;
+  color:#2a1a04;font-size:clamp(20px,3vw,28px);font-weight:900;
+  letter-spacing:3px;text-transform:uppercase;
+  box-shadow:0 10px 0 #6a4410,0 20px 40px rgba(0,0,0,.6);
+  animation:pop .5s cubic-bezier(.2,1.4,.5,1) both;
+}
+@keyframes fadeIO{0%{opacity:0;}15%{opacity:1;}85%{opacity:1;}100%{opacity:0;}}
+
+/* modo debug */
+.dbg{
+  position:fixed;bottom:8px;left:8px;z-index:90;
+  padding:6px 10px;background:rgba(0,0,0,.85);
+  border:1px solid #3a4150;border-radius:4px;
+  font-family:monospace;font-size:10.5px;color:#8fb6ff;
+  max-width:340px;pointer-events:none;
+}
+
+/* responsividade */
+@media (max-width:720px){
+  .hall{gap:8px;}
+  .zone{width:120px;height:170px;padding:12px 8px;}
+  .zone-emoji{font-size:32px;}
+  .zone-name{font-size:12px;}
+  .zone-focus{font-size:8.5px;}
+  .stage{padding:70px 12px 16px;}
+  .tray{max-width:none;padding:14px 10px;}
+  .paint-row{grid-template-columns:repeat(2,1fr);}
+  .menu-btns .wood{flex:1;min-width:120px;font-size:11px;padding:9px 12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- menu -->
+<div id="menu" class="screen on">
+  <div class="signboard">
+    <h1>DESAFIOS COGNITIVOS</h1>
+    <p>funções executivas</p>
+  </div>
+  <div class="hall" id="hall"></div>
+  <div class="menu-btns">
+    <button class="wood gold" id="btnSession">▶ Começar sessão</button>
+    <button class="wood" id="btnHow">Como funciona</button>
+    <button class="wood" id="btnHistory">Sessões</button>
+    <button class="wood" id="btnSettings">Config</button>
+  </div>
+</div>
+
+<!--como funciona-->
+<div id="how" class="screen simple">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Como funciona</h2>
+      <button class="wood" data-nav="menu">← Voltar</button>
+    </div>
+    <p class="hint">
+      Cada tarefa foi projetada para <strong>enfatizar</strong> um processo
+      cognitivo diferente. Nenhuma delas mede exclusivamente uma única função.
+    </p>
+    <div id="howList"></div>
+    <div style="margin-top:18px;padding:14px 18px;background:rgba(122,34,34,.08);border-left:4px solid #7a2222;border-radius:3px;">
+      <p style="margin:0;font-size:12.5px;color:#5a2a2a;">
+        <strong>⚠ Aviso:</strong> protótipo experimental e educacional.
+        Os resultados representam o desempenho nas tarefas e
+        <strong>não constituem diagnóstico, avaliação clínica ou medida de inteligência</strong>.
+      </p>
+    </div>
+    <div class="btn-row">
+      <button class="wood gold" data-nav="menu">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<!-- historico -->
+<div id="history" class="screen simple">
+  <div class="notebook">
+    <h2>
+      <span>📓 Caderno de sessões</span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="wood" id="btnExportJson" style="font-size:11px;padding:7px 14px;">JSON</button>
+        <button class="wood" id="btnExportCsv" style="font-size:11px;padding:7px 14px;">CSV</button>
+        <button class="wood" id="btnClear" style="font-size:11px;padding:7px 14px;">Apagar</button>
+        <button class="wood" data-nav="menu" style="font-size:11px;padding:7px 14px;">← Voltar</button>
+      </span>
+    </h2>
+    <p style="font-size:11.5px;color:#c9a878;font-family:monospace;letter-spacing:.5px;margin-bottom:14px;">
+      Diferenças entre sessões podem refletir familiarização com as tarefas.
+    </p>
+    <div id="histList"></div>
+  </div>
+</div>
+
+<!-- configuraçoes -->
+<div id="settings" class="screen simple">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>⚙ Configurações</h2>
+      <button class="wood" data-nav="menu">← Voltar</button>
+    </div>
+    <div style="margin-bottom:20px;">
+      <div style="font-family:monospace;font-size:11px;color:#7a2222;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">
+        Nível de dificuldade
+      </div>
+      <div id="diffGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;"></div>
+    </div>
+    <div>
+      <div style="font-family:monospace;font-size:11px;color:#7a2222;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">
+        Modo debug
+      </div>
+      <div id="dbgGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;"></div>
+    </div>
+    <div style="margin-top:20px;padding:14px 18px;background:rgba(59,125,216,.08);border-left:4px solid #3b7dd8;border-radius:3px;">
+      <p style="margin:0;font-size:12.5px;color:#2a4a7a;">
+        ℹ Dados salvos apenas neste navegador (<code style="font-family:monospace;">localStorage</code>).
+        Nada é enviado para servidores.
+      </p>
+    </div>
+    <div class="btn-row">
+      <button class="wood gold" data-nav="menu">Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- jogo  -->
+<div id="game" class="screen">
+  <div class="scene" id="scene"></div>
+  <div class="hud">
+    <button class="hud-exit" id="btnExit">← Sair</button>
+    <div class="hud-trail" id="hudTrail"></div>
+  </div>
+  <div class="stage" id="stage"></div>
+</div>
+
+<!-- modal 2 -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <p id="modalBody"></p>
+    <input id="modalInput" type="text" placeholder="">
+    <div class="modal-actions">
+      <button class="wood" id="modalCancel">Cancelar</button>
+      <button class="wood gold" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* parte 2 do codigo (dividi em 5, pra ficar mais facil de comentar e entender) */
+"use strict";
+
+let DEBUG = false;
+const STORAGE_KEY = "cognitiveGameSessions";
+const SETTINGS_KEY = "cognitiveGameSettings";
+
+const DIFFS = {
+  facil:   { label: "Fácil",   desc: "Menos estímulos" },
+  medio:   { label: "Médio",   desc: "Padrão" },
+  dificil: { label: "Difícil", desc: "Mais estímulos" }
+};
+
+const PARAMS = {
+    lista: {
+    facil:   { n:5, d:3, memo:7000, resp:30000 },
+    medio:   { n:7, d:5, memo:6000, resp:28000 },
+    dificil: { n:9, d:6, memo:5000, resp:26000 }
+  },
+  sapo: {
+    facil:   { trials:20, resp:1600, isi:1200, fr:0.20 },
+    medio:   { trials:30, resp:1200, isi:800,  fr:0.20 },
+    dificil: { trials:40, resp:900,  isi:500,  fr:0.18 }
+  },
+  estacao: {
+    facil:   { rounds:2, pr:5, nd:5, mode:"easy",   resp:40000 },
+    medio:   { rounds:2, pr:6, nd:6, mode:"medium", resp:38000 },
+    dificil: { rounds:3, pr:6, nd:7, mode:"hard",   resp:34000 }
+  },
+  regra: {
+    facil:   { blocks:2, pb:10, resp:3200, isi:400 },
+    medio:   { blocks:3, pb:9,  resp:2600, isi:350 },
+    dificil: { blocks:4, pb:8,  resp:2000, isi:300 }
+  },
+  stroop: {
+    facil:   { trials:15, cr:0.70, resp:3500, isi:400 },
+    medio:   { trials:20, cr:0.50, resp:2800, isi:350 },
+    dificil: { trials:25, cr:0.30, resp:2200, isi:300 }
+  }
+};
+
+const GAMES = [
+  { id:"lista",   emoji:"🛒", name:"Lista de Compras", focus:"Memória de trabalho",     palette:"shop" },
+  { id:"sapo",    emoji:"🐾", name:"Não Pegue o Sapo", focus:"Controle inibitório",     palette:"frog" },
+  { id:"estacao", emoji:"🚂", name:"Estação RN",       focus:"Atenção seletiva",        palette:"station" },
+  { id:"regra",   emoji:"🔄", name:"Mude a Regra",     focus:"Flexibilidade cognitiva", palette:"rule" },
+  { id:"stroop",  emoji:"🎨", name:"Qual é a Cor?",    focus:"Interferência",           palette:"stroop" }
+];
+
+const INSTRUCTIONS = {
+  lista: [
+    "Uma <strong>lista de compras</strong> aparece por alguns segundos — memorize os itens.",
+    "Depois ela desaparece e você vê a grade completa.",
+    "Selecione <strong>apenas</strong> os produtos que estavam na lista.",
+    "Confirme ao final."
+  ],
+  sapo: [
+    "Vários animais aparecem na clareira.",
+    "Clique em <strong>todos os animais</strong> assim que aparecerem.",
+    "Mas <strong>NÃO clique no sapo</strong> 🐸.",
+    "Aperte <strong>ESPAÇO</strong> ou clique no animal para capturar."
+  ],
+  estacao: [
+    "Cada rodada mostra <strong>bilhetes de passageiros</strong> na plataforma.",
+    "No painel está a <strong>regra de embarque</strong> da rodada.",
+    "Selecione os bilhetes que atendem à regra.",
+    "Confirme no botão."
+  ],
+  regra: [
+    "Uma <strong>regra</strong> aparece no quadro da bancada.",
+    "Classifique cada objeto em <strong>ESQUERDA</strong> ou <strong>DIREITA</strong>.",
+    "Use as setas <strong>← →</strong> ou clique nas bandejas.",
+    "A regra muda de tempo em tempo — fique atento."
+  ],
+  stroop: [
+    "Uma <strong>palavra de cor</strong> aparece impressa.",
+    "Escolha a <strong>COR DA TINTA</strong>, ignorando a palavra.",
+    "Exemplo: <em>AZUL</em> escrito em verde → responda <strong>VERDE</strong>.",
+    "Use os potes ou as teclas <strong>1 · 2 · 3 · 4</strong>."
+  ]
+};
+
+const ITENS = [
+  {e:"🍎",n:"Maçã"},{e:"🍌",n:"Banana"},{e:"🥛",n:"Leite"},{e:"🍞",n:"Pão"},
+  {e:"🧀",n:"Queijo"},{e:"🥚",n:"Ovos"},{e:"🍚",n:"Arroz"},{e:"🫘",n:"Feijão"},
+  {e:"☕",n:"Café"},{e:"🧴",n:"Detergente"},{e:"🧻",n:"Papel"},{e:"🍫",n:"Chocolate"},
+  {e:"🥕",n:"Cenoura"},{e:"🍅",n:"Tomate"},{e:"🍇",n:"Uva"},{e:"🥩",n:"Carne"},
+  {e:"🐟",n:"Peixe"},{e:"🧃",n:"Suco"},{e:"🍪",n:"Biscoito"},{e:"🧼",n:"Sabonete"},
+  {e:"🍊",n:"Laranja"},{e:"🥔",n:"Batata"},{e:"🧂",n:"Sal"},{e:"🍯",n:"Mel"},
+  {e:"🍕",n:"Pizza"},{e:"🍔",n:"Hambúrguer"},{e:"🥣",n:"Iogurte"},{e:"🌽",n:"Milho"},
+  {e:"🥐",n:"Croissant"}
+];
+
+const SEMANTIC_PAIRS = {
+  "Maçã":      {e:"🍅", n:"Tomate"},
+  "Tomate":    {e:"🍎", n:"Maçã"},
+  "Leite":     {e:"🥣", n:"Iogurte"},
+  "Iogurte":   {e:"🥛", n:"Leite"},
+  "Banana":    {e:"🌽", n:"Milho"},
+  "Milho":     {e:"🍌", n:"Banana"},
+  "Pão":       {e:"🥐", n:"Croissant"},
+  "Croissant": {e:"🥖", n:"Pão"},
+  "Queijo":    {e:"🥣", n:"Iogurte"},
+  "Pizza":     {e:"🍔", n:"Hambúrguer"},
+  "Hambúrguer":{e:"🍕", n:"Pizza"}
+};
+
+const ANIMAIS = [
+  {id:"cachorro",emoji:"🐶",nome:"Cachorro"},
+  {id:"gato",emoji:"🐱",nome:"Gato"},
+  {id:"coelho",emoji:"🐰",nome:"Coelho"},
+  {id:"raposa",emoji:"🦊",nome:"Raposa"},
+  {id:"esquilo",emoji:"🐿️",nome:"Esquilo"},
+  {id:"rato",emoji:"🐭",nome:"Rato"}
+];
+const SAPO = {id:"sapo",emoji:"🐸",nome:"Sapo"};
+
+const DESTINOS = ["EAJ","Natal","Macaíba","Parnamirim","Ceará-Mirim","Nova Cruz","Monte Alegre","Guamaré","São José de Mipibu","Santo Antônio do Salto da Onça"];
+const CLASSES = ["Executivo","Econômica","Primeira"];
+const HORARIOS = (() => {
+  const a = [];
+  for (let h = 13; h <= 17; h++)
+    for (const m of [0,15,30,45])
+      a.push(`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`);
+  return a;
+})();
+
+const CORES = [
+  {id:"vermelho",nome:"Vermelho",hex:"#d44a4a"},
+  {id:"azul",nome:"Azul",hex:"#3b7dd8"},
+  {id:"verde",nome:"Verde",hex:"#4ec28f"},
+  {id:"amarelo",nome:"Amarelo",hex:"#f0c04a"}
+];
+
+const RULES = [
+  { id:"food-animal", desc:"🍎 Comida → ESQUERDA · 🐶 Animal → DIREITA",
+    match: s => s.cat === "food" ? "left" : "right",
+    items: [
+      {emoji:"🍎",cat:"food"},{emoji:"🍌",cat:"food"},{emoji:"🍕",cat:"food"},
+      {emoji:"🍔",cat:"food"},{emoji:"🥕",cat:"food"},{emoji:"🍇",cat:"food"},
+      {emoji:"🐶",cat:"animal"},{emoji:"🐱",cat:"animal"},{emoji:"🐰",cat:"animal"},
+      {emoji:"🐟",cat:"animal"},{emoji:"🐦",cat:"animal"},{emoji:"🐴",cat:"animal"}
+    ] },
+  { id:"warm-cool", desc:"🔴🟡 Quentes → ESQUERDA · 🔵🟢 Frias → DIREITA",
+    match: s => (s.color === "red" || s.color === "yellow") ? "left" : "right",
+    items: [
+      {emoji:"🔴",color:"red"},{emoji:"🟡",color:"yellow"},{emoji:"🟠",color:"red"},
+      {emoji:"🔵",color:"blue"},{emoji:"🟢",color:"green"},{emoji:"🟣",color:"blue"}
+    ] },
+  { id:"veic-instr", desc:"🚗 Veículo → ESQUERDA · 🎸 Instrumento → DIREITA",
+    match: s => s.cat === "vehicle" ? "left" : "right",
+    items: [
+      {emoji:"🚗",cat:"vehicle"},{emoji:"🚌",cat:"vehicle"},{emoji:"🚲",cat:"vehicle"},
+      {emoji:"✈️",cat:"vehicle"},{emoji:"🎸",cat:"instrument"},{emoji:"🎹",cat:"instrument"},
+      {emoji:"🥁",cat:"instrument"},{emoji:"🎺",cat:"instrument"}
+    ] },
+  { id:"big-small", desc:"🐘 Grande → ESQUERDA · 🐜 Pequeno → DIREITA",
+    match: s => s.size === "big" ? "left" : "right",
+    items: [
+      {emoji:"🐘",size:"big"},{emoji:"🐋",size:"big"},{emoji:"🏔️",size:"big"},
+      {emoji:"🚢",size:"big"},{emoji:"🐜",size:"small"},{emoji:"🐝",size:"small"},
+      {emoji:"🐭",size:"small"},{emoji:"🍒",size:"small"}
+    ] }
+];
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const ri = (a,b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const shuf = a => {
+  const s = a.slice();
+  for (let i = s.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [s[i], s[j]] = [s[j], s[i]];
+  }
+  return s;
+};
+const avg = a => {
+  const f = (a || []).filter(v => v != null && !isNaN(v));
+  return f.length ? f.reduce((x,y) => x + y, 0) / f.length : null;
+};
+const fmtMs = v => (v == null || isNaN(v)) ? "—" : `${Math.round(v)} ms`;
+const fmtPct = v => (v == null || isNaN(v)) ? "—" : `${Math.round(v * 100)}%`;
+const fmtDate = iso => {
+  try { return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}); }
+  catch { return iso; }
+};
+const uid = p => `${p}-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;
+
+function el(tag, props, ...kids){
+  const n = document.createElement(tag);
+  if (props) for (const [k,v] of Object.entries(props)){
+    if (v == null || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k === "html") n.innerHTML = v;
+    else if (k === "text") n.textContent = v;
+    else if (k === "onclick") n.onclick = v;
+    else if (k === "style") n.setAttribute("style", v);
+    else if (k.startsWith("on") && typeof v === "function")
+      n.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === "dataset") Object.assign(n.dataset, v);
+    else n.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => {
+    if (c == null || c === false) return;
+    n.appendChild(c instanceof Node ? c : document.createTextNode(String(c)));
+  });
+  return n;
+}
+
+const DB = {
+  sessions: [],
+  settings: { difficulty:"medio", debug:false },
+  load(){
+    try {
+      const r = localStorage.getItem(STORAGE_KEY);
+      if (r){ const p = JSON.parse(r); if (Array.isArray(p)) this.sessions = p; }
+      const s = localStorage.getItem(SETTINGS_KEY);
+      if (s) this.settings = { ...this.settings, ...JSON.parse(s) };
+    } catch(e){ console.warn(e); }
+  },
+  save(){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.sessions));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(this.settings));
+    } catch(e){ console.warn(e); }
+  },
+  add(s){ this.sessions.unshift(s); this.save(); },
+  clear(){ this.sessions = []; this.save(); }
+};
+
+function download(name, content, mime){
+  const b = new Blob([content], { type: (mime || "text/plain") + ";charset=utf-8" });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement("a");
+  a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(u), 1000);
+}
+
+function exportCSV(){
+  if (!DB.sessions.length) return alert("Nenhuma sessão registrada.");
+      const head = ["session_id","participant_id","session_timestamp","difficulty",
+    "game_id","game_name","round_number","trial_number","stimulus",
+    "expected_response","actual_response","correct","omission","false_positive",
+    "reaction_time_ms","trial_timestamp","item_name","item_in_list","item_selected",
+    "selection_order","animal_id","animal_is_frog","passenger_destination","passenger_time",
+    "passenger_platform","passenger_train_number","passenger_train_type",
+    "rule_text","rule_id","rule_description",
+    "stim_color","stim_shape","stim_size","active_rule",
+    "block_number","is_first_after_switch","condition","word","ink_color","timeout"];
+  const rows = [head];
+  const esc = v => `"${String(v == null ? "" : v).replace(/"/g,'""')}"`;
+  DB.sessions.forEach(s => {
+    (s.games || []).forEach(g => {
+      (g.trials || []).forEach(t => {
+        rows.push([
+          s.session_id, s.participant_id || "", s.timestamp || "", s.difficulty || "",
+          g.game_id, g.game_name, t.round_number ?? "", t.trial_number ?? "",
+          t.stimulus ?? "", t.expected_response ?? "", t.actual_response ?? "",
+          t.correct ? 1 : 0, t.omission ? 1 : 0, t.false_positive ? 1 : 0,
+          t.reaction_time_ms != null ? Math.round(t.reaction_time_ms) : "",
+          t.trial_timestamp || "",
+          t.item_name ?? "", t.item_in_list ?? "", t.item_selected ?? "",
+          t.selection_order ?? "",
+          t.animal_id ?? "", t.animal_is_frog ?? "",
+          t.passenger_destination ?? "", t.passenger_time ?? "",
+          t.passenger_platform ?? "", t.passenger_train_number ?? "", t.passenger_train_type ?? "", t.rule_text ?? "",
+          t.rule_id ?? "", t.rule_description ?? "",
+          t.color ?? "", t.shape ?? "", t.size ?? "", t.active_rule ?? "",
+          t.block_number ?? "",
+          t.is_first_after_switch ?? "",
+          t.condition ?? "", t.word ?? "", t.ink_color ?? "",
+          t.timeout ? 1 : 0
+        ].map(esc));
+      });
+    });
+  });
+  download(`desafios_${Date.now()}.csv`, "\uFEFF" + rows.map(r => r.join(";")).join("\r\n"), "text/csv");
+}
+
+function exportJSON(){
+  if (!DB.sessions.length) return alert("Nenhuma sessão registrada.");
+  download(`desafios_${Date.now()}.json`,
+    JSON.stringify({
+      app: "Desafios Cognitivos",
+      version: "1.0.0",
+      exported_at: new Date().toISOString(),
+      sessions: DB.sessions
+    }, null, 2),
+    "application/json");
+}
+
+function clearAll(){
+  if (!DB.sessions.length) return;
+  if (confirm("Apagar TODAS as sessões salvas?")){ DB.clear(); renderHistory(); }
+}
+
+function go(id){
+  $$(".screen").forEach(s => s.classList.remove("on"));
+  const t = document.getElementById(id);
+  if (t) t.classList.add("on");
+}
+
+function modal({ title, body, placeholder, withInput }){
+  return new Promise(resolve => {
+    const bg = $("#modalBg");
+    $("#modalTitle").textContent = title;
+    $("#modalBody").textContent = body;
+    const inp = $("#modalInput");
+    inp.value = "";
+    inp.placeholder = placeholder || "";
+    inp.style.display = withInput === false ? "none" : "";
+    bg.classList.add("on");
+    const done = ok => {
+      bg.classList.remove("on");
+      $("#modalOk").removeEventListener("click", onOk);
+      $("#modalCancel").removeEventListener("click", onCancel);
+      inp.removeEventListener("keydown", onKey);
+      resolve(ok ? { ok:true, value: inp.value } : { ok:false });
+    };
+    const onOk = () => done(true);
+    const onCancel = () => done(false);
+    const onKey = e => {
+      if (e.key === "Enter"){ e.preventDefault(); done(true); }
+      else if (e.key === "Escape"){ e.preventDefault(); done(false); }
+    };
+    $("#modalOk").addEventListener("click", onOk);
+    $("#modalCancel").addEventListener("click", onCancel);
+    inp.addEventListener("keydown", onKey);
+    setTimeout(() => { if (withInput !== false) inp.focus(); }, 40);
+  });
+}
+
+function flash(ok){
+  const d = el("div", { class: "ff " + (ok ? "ok" : "bad") });
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 520);
+}
+
+function debugMsg(m){
+  if (!DEBUG) return;
+  let d = document.getElementById("__dbg");
+  if (!d){ d = el("div", { class:"dbg", id:"__dbg" }); document.body.appendChild(d); }
+  d.textContent = "[DEBUG] " + m;
+}
+
+class BaseGame {
+  constructor(stage, params){
+    this.stage = stage;
+    this.params = params;
+    this.trials = [];
+    this.aborted = false;
+    this._timers = new Set();
+    this._pendingRes = new Set();
+    this._cleanups = new Set();
+  }
+
+  wait(ms){
+    return new Promise(res => {
+      const id = setTimeout(() => {
+        this._timers.delete(id);
+        this._pendingRes.delete(res);
+        res();
+      }, ms);
+      this._timers.add(id);
+      this._pendingRes.add(res);
+    });
+  }
+
+  awaitResponse({ timeout, keyMap, buttons }){
+    keyMap = keyMap || {};
+    buttons = buttons || [];
+    return new Promise(res => {
+      const start = performance.now();
+      let settled = false;
+      const cleanups = [];
+
+      const finish = p => {
+        if (settled) return;
+        settled = true;
+        cleanups.forEach(fn => { try { fn(); } catch(e){} });
+        res({ ...p, rt: performance.now() - start });
+      };
+
+      const onKey = e => {
+        const k = e.key === " " ? "space" : e.key;
+        if (Object.prototype.hasOwnProperty.call(keyMap, k)){
+          e.preventDefault();
+          finish({ responded:true, response:keyMap[k], omission:false });
+        }
+      };
+      document.addEventListener("keydown", onKey);
+      cleanups.push(() => document.removeEventListener("keydown", onKey));
+
+      buttons.forEach(btn => {
+        if (!btn) return;
+        const h = e => {
+          e.preventDefault();
+          finish({ responded:true, response:btn.dataset.value, omission:false });
+        };
+        btn.addEventListener("click", h);
+        cleanups.push(() => btn.removeEventListener("click", h));
+      });
+
+      if (timeout){
+        const tid = setTimeout(() => {
+          this._timers.delete(tid);
+          finish({ responded:false, response:null, omission:true });
+        }, timeout);
+        this._timers.add(tid);
+        cleanups.push(() => { clearTimeout(tid); this._timers.delete(tid); });
+      }
+
+      this._cleanups.add(cleanups);
+    });
+  }
+
+  record(t){
+    this.trials.push({ ...t, trial_timestamp: new Date().toISOString() });
+  }
+
+  abort(){
+    this.aborted = true;
+    this._timers.forEach(id => clearTimeout(id));
+    this._timers.clear();
+    this._cleanups.forEach(list => list.forEach(fn => { try { fn(); } catch(e){} }));
+    this._cleanups.clear();
+    this._pendingRes.forEach(res => res());
+    this._pendingRes.clear();
+  }
+
+  async run(){ throw new Error("run não implementado"); }
+  static extras(){ return []; }
+}
+/* parte 3 */
+class JogoLista extends BaseGame {
+   async run(){
+    const p = this.params;
+    const pool = shuf(ITENS);
+    const target = pool.slice(0, p.n);
+    const targetNames = new Set(target.map(i => i.n));
+
+    const usedPairs = new Set();
+    const chosen = [];
+    const seenNames = new Set(targetNames);
+
+    target.forEach(it => {
+      const par = SEMANTIC_PAIRS[it.n];
+      if (par && !usedPairs.has(par.n) && !seenNames.has(par.n) && chosen.length < 2){
+        chosen.push({ e: par.e, n: par.n });
+        usedPairs.add(par.n);
+        seenNames.add(par.n);
+      }
+    });
+
+    const distractPool = pool.filter(i => !seenNames.has(i.n));
+    const restantes = shuf(distractPool).filter(i => !chosen.some(c => c.n === i.n));
+    const nRest = Math.max(0, p.d - chosen.length);
+    const distract = [...chosen, ...restantes.slice(0, nRest)];
+
+    await this.faseMemo(target, p.memo);
+    if (this.aborted) return;
+    await this.faseSelect([...target, ...distract], targetNames, p.resp);
+  }
+
+  async faseMemo(items, ms){
+    this.stage.innerHTML = "";
+
+    const rows = items.map(it => el("div", { class: "list-row" },
+      el("span", { class: "box" }),
+      el("span", { style: "font-size:18px;" }, it.e),
+      el("span", {}, it.n)
+    ));
+
+    const list = el("div", { class: "list-paper" },
+      el("h4", {}, "🛒 Lista de Compras"),
+      rows
+    );
+
+    const fill = el("div", { class: "timer-fill" });
+    fill.style.width = "100%";
+    fill.style.transition = `width ${ms}ms linear`;
+
+    const bar = el("div", { class: "timer-wrap" },
+      el("span", { style: "font-size:18px;" }, "⏱"),
+      el("div", { class: "timer-bar" }, fill)
+    );
+
+    this.stage.appendChild(el("div", {
+      style: "display:flex;flex-direction:column;align-items:center;gap:18px;"
+    }, list, bar));
+
+    requestAnimationFrame(() => { fill.style.width = "0%"; });
+    await this.wait(ms);
+  }
+
+   async faseSelect(items, targetNames, timeout){
+    this.stage.innerHTML = "";
+
+    const shuffled = shuf(items);
+    const selected = new Set();
+    const grid = el("div", { class: "item-grid" });
+
+    shuffled.forEach(it => {
+      const card = el("div", { class: "item" },
+        el("div", { class: "em" }, it.e),
+        el("div", { class: "nm" }, it.n)
+      );
+
+      card.onclick = () => {
+        if (selected.has(it.n)){ selected.delete(it.n); card.classList.remove("sel"); }
+        else { selected.add(it.n); card.classList.add("sel"); }
+      };
+
+      grid.appendChild(card);
+    });
+
+    const confirm = el("button",
+      { class: "wood gold", style: "padding:12px 26px;font-size:14px;" },
+      "✓ Confirmar seleção"
+    );
+
+    this.stage.appendChild(el("div", {
+      style: "display:flex;flex-direction:column;align-items:center;gap:18px;"
+    }, grid, confirm));
+
+    const res = await this.awaitResponse({ timeout, buttons: [confirm] });
+
+    const selectionOrder = shuffled
+      .filter(it => selected.has(it.n))
+      .map(it => it.n);
+
+    shuffled.forEach((it, i) => {
+      const inList = targetNames.has(it.n);
+      const wasSel = selected.has(it.n);
+      const correct = inList === wasSel;
+
+      this.record({
+        trial_number: i + 1,
+        stimulus: `${it.e} ${it.n}`,
+        expected_response: inList ? "select" : "not_select",
+        actual_response: wasSel ? "select" : "not_select",
+        correct,
+        omission: inList && !wasSel,
+        false_positive: !inList && wasSel,
+        reaction_time_ms: res.rt,
+        item_name: it.n,
+        item_in_list: inList,
+        item_selected: wasSel,
+        selection_order: selectionOrder.join("|")
+      });
+    });
+  }
+
+  static extras(trials){
+    const inL = trials.filter(t => t.item_in_list);
+    const notL = trials.filter(t => !t.item_in_list);
+    const hits = inL.filter(t => t.correct).length;
+    const fp = notL.filter(t => t.false_positive).length;
+    const om = inL.filter(t => t.omission).length;
+    const rt = trials.length ? trials[0].reaction_time_ms : null;
+
+    return [
+      { label: "Itens da lista lembrados", value: `${hits}/${inL.length}` },
+      { label: "Seleções incorretas", value: String(fp) },
+      { label: "Omissões", value: String(om) },
+      { label: "Tempo total da seleção", value: fmtMs(rt) }
+    ];
+  }
+}
+
+class JogoSapo extends BaseGame {
+  async run(){
+    const p = this.params;
+    const nFrogs = Math.max(2, Math.round(p.trials * p.fr));
+    const nTargets = p.trials - nFrogs;
+
+    const seq = [];
+    for (let i = 0; i < nTargets; i++) seq.push({ animal: ANIMAIS[ri(0, ANIMAIS.length - 1)], isFrog: false });
+    for (let i = 0; i < nFrogs; i++) seq.push({ animal: SAPO, isFrog: true });
+
+    const ordered = shuf(seq);
+
+    for (let i = 0; i < ordered.length; i++){
+      if (this.aborted) return;
+      await this.runTrial(ordered[i], i, ordered.length);
+    }
+  }
+
+    async runTrial(t, idx, total){
+    const p = this.params;
+    this.stage.innerHTML = "";
+    await this.wait(p.isi);
+    if (this.aborted) return;
+    this.stage.innerHTML = "";
+
+    const positions = [
+      { left: "35%", bottom: "40%" },
+      { left: "50%", bottom: "38%" },
+      { left: "65%", bottom: "40%" },
+      { left: "42%", bottom: "42%" },
+      { left: "58%", bottom: "42%" }
+    ];
+    const pos = positions[ri(0, positions.length - 1)];
+
+    const animal = el("div", {
+      class: "animal-svg" + (t.isFrog ? " no-click" : " catchable"),
+      style: `position:absolute;left:${pos.left};bottom:${pos.bottom};transform:translateX(-50%);`
+    }, t.animal.emoji);
+
+    if (!t.isFrog) animal.dataset.value = "catch";
+
+    const mission = el("div", { class: "wood-mission" },
+      el("div", { class: "tag" }, "Missão"),
+      el("div", { class: "txt", html: t.isFrog
+        ? "🐸 Cuidado — é o sapo. <strong>Não capture.</strong>"
+        : "🐾 Animal na clareira! Capture se for seguro." })
+    );
+
+    this.stage.appendChild(el("div", {
+      style: "display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;"
+    },
+      mission,
+      el("div", { style: "position:relative;width:100%;max-width:600px;min-height:280px;" }, animal)
+    ));
+
+    const res = await this.awaitResponse({
+      timeout: p.resp,
+      keyMap: { space: "catch", Enter: "catch" },
+      buttons: t.isFrog ? [] : [animal]
+    });
+
+    const responded = res.responded;
+    const shouldRespond = !t.isFrog;
+    const correct = responded === shouldRespond;
+
+    this.record({
+      trial_number: idx + 1,
+      stimulus: t.animal.nome,
+      expected_response: shouldRespond ? "catch" : "no_catch",
+      actual_response: responded ? "catch" : "no_catch",
+      correct,
+      omission: shouldRespond && !responded,
+      false_positive: !shouldRespond && responded,
+      reaction_time_ms: responded ? res.rt : null,
+      animal_id: t.animal.id,
+      animal_is_frog: t.isFrog
+    });
+
+    debugMsg(`T${idx + 1} ${t.animal.nome} exp=${shouldRespond} resp=${responded}`);
+    flash(correct);
+    await this.wait(180);
+  }
+
+  static extras(trials){
+    const targets = trials.filter(t => !t.animal_is_frog);
+    const frogs = trials.filter(t => t.animal_is_frog);
+    const hits = targets.filter(t => t.correct).length;
+    const cr = frogs.filter(t => t.correct).length;
+    const fp = frogs.filter(t => t.false_positive).length;
+    const om = targets.filter(t => t.omission).length;
+    const rts = trials.filter(t => t.correct && t.reaction_time_ms != null).map(t => t.reaction_time_ms);
+
+    return [
+      { label: "Animais capturados", value: `${hits}/${targets.length}` },
+      { label: "Inibições corretas no sapo", value: `${cr}/${frogs.length}` },
+      { label: "Falsos cliques no sapo", value: String(fp) },
+      { label: "Omissões em animais clicáveis", value: String(om) },
+      { label: "RT médio em acertos", value: fmtMs(avg(rts)) }
+    ];
+  }
+}
+/* parte 4 */
+const TIPOS_TREM = ["Expresso", "Regional", "Intermunicipal", "Turístico"];
+
+class JogoEstacao extends BaseGame {
+    async run(){
+    const p = this.params;
+    let counter = 0;
+
+    for (let r = 0; r < p.rounds; r++){
+      if (this.aborted) return;
+
+      const dests = shuf(DESTINOS).slice(0, p.nd);
+      const rule = this.buildRule(p, dests);
+      const passengers = this.genPassengers(p, dests, rule);
+
+      await this.showRuleIntro(r + 1, p.rounds, rule);
+      if (this.aborted) return;
+
+      const { selected, elapsed } = await this.showPassengers(passengers, rule, p.resp);
+      if (this.aborted) return;
+
+      passengers.forEach(ps => {
+        const should = rule.match(ps);
+        const wasSel = selected.has(ps.id);
+        const correct = should === wasSel;
+
+        this.record({
+          trial_number: ++counter,
+          round_number: r + 1,
+          stimulus: `${ps.destination} · ${ps.time} · Plat ${ps.platform} · Trem ${ps.trainNumber} (${ps.trainType})`,
+          expected_response: should ? "select" : "not_select",
+          actual_response: wasSel ? "select" : "not_select",
+          correct,
+          omission: should && !wasSel,
+          false_positive: !should && wasSel,
+          reaction_time_ms: elapsed,
+          passenger_destination: ps.destination,
+          passenger_time: ps.time,
+          passenger_platform: ps.platform,
+          passenger_train_number: ps.trainNumber,
+          passenger_train_type: ps.trainType,
+          rule_text: rule.text,
+          rule_id: rule.id
+        });
+      });
+    }
+  }
+
+  buildRule(p, dests){
+    const mode = p.mode || "easy";
+    const d1 = dests[ri(0, dests.length - 1)];
+
+    if (mode === "easy"){
+      return {
+        id: "dest",
+        text: `Embarque apenas passageiros com destino a ${d1}.`,
+        match: ps => ps.destination === d1
+      };
+    }
+
+    if (mode === "medium"){
+      const plat = ri(1, 3);
+      return {
+        id: "dest_plat",
+        text: `Embarque passageiros com destino a ${d1} na plataforma ${plat}.`,
+        match: ps => ps.destination === d1 && ps.platform === plat
+      };
+    }
+
+    const tipo = ri(0, 2);
+
+    if (tipo === 0){
+      let d2 = dests[ri(0, dests.length - 1)];
+      while (d2 === d1 && dests.length > 1){
+        d2 = dests[ri(0, dests.length - 1)];
+      }
+      const plat = ri(1, 3);
+      return {
+        id: "dest_or_plat",
+        text: `Embarque passageiros para ${d1} ou ${d2}, somente na plataforma ${plat}.`,
+        match: ps => (ps.destination === d1 || ps.destination === d2) && ps.platform === plat
+      };
+    }
+
+    if (tipo === 1){
+      const corte = HORARIOS[ri(4, HORARIOS.length - 5)];
+      const antes = Math.random() < 0.5;
+      return {
+        id: "dest_time",
+        text: antes
+          ? `Embarque passageiros para ${d1} antes das ${corte}.`
+          : `Embarque passageiros para ${d1} depois das ${corte}.`,
+        match: ps => ps.destination === d1 && (antes ? ps.time < corte : ps.time > corte)
+      };
+    }
+
+    const corte = HORARIOS[ri(4, HORARIOS.length - 5)];
+    const antes = Math.random() < 0.5;
+    const plat = ri(1, 3);
+    return {
+      id: "dest_time_plat",
+      text: antes
+        ? `Embarque passageiros para ${d1} antes das ${corte}, na plataforma ${plat}.`
+        : `Embarque passageiros para ${d1} depois das ${corte}, na plataforma ${plat}.`,
+      match: ps => ps.destination === d1
+                && (antes ? ps.time < corte : ps.time > corte)
+                && ps.platform === plat
+    };
+  }
+
+      randomPassenger(dests){
+    const trainNumber = ri(100, 999);
+    return {
+      id: trainNumber,
+      destination: dests[ri(0, dests.length - 1)],
+      time: HORARIOS[ri(0, HORARIOS.length - 1)],
+      platform: ri(1, 4),
+      trainNumber: trainNumber,
+      trainType: TIPOS_TREM[ri(0, TIPOS_TREM.length - 1)]
+    };
+  }
+
+  genPassengers(p, dests, rule){
+    const out = [];
+    const nShould = Math.max(1, Math.round(p.pr * 0.4));
+    let g = 0;
+
+    while (out.filter(ps => rule.match(ps)).length < nShould && g++ < 200){
+      const ps = this.randomPassenger(dests);
+      if (rule.match(ps)) out.push(ps);
+    }
+
+    g = 0;
+    while (out.length < p.pr && g++ < 200){
+      const ps = this.randomPassenger(dests);
+      if (!rule.match(ps)) out.push(ps);
+    }
+
+    shuf(out).forEach((ps, i) => { ps.id = i; });
+    return out;
+  }
+
+  async showRuleIntro(round, total, rule){
+    this.stage.innerHTML = "";
+
+    this.stage.appendChild(el("div", {
+      style: "display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;"
+    },
+      el("div", { class: "phase station" },
+        el("div", { class: "tag" }, `Estação RN · rodada ${round}/${total}`),
+        el("div", { class: "txt" }, "Leia a ordem de embarque antes de continuar.")
+      ),
+      el("div", { class: "station-board" },
+        el("div", { class: "head" }, "▸ ORDEM DE EMBARQUE"),
+        el("div", { class: "row" },
+          el("span", { class: "k" }, "REGRA"),
+          el("span", { class: "v" }, rule.text)
+        )
+      ),
+      el("button", {
+        class: "wood gold", id: "estOk",
+        style: "padding:12px 26px;font-size:14px;"
+      }, "Iniciar rodada")
+    ));
+
+    await new Promise(res => {
+      const b = $("#estOk");
+      b.addEventListener("click", res, { once: true });
+      this._cleanups.add([() => b.removeEventListener("click", res)]);
+    });
+  }
+
+  async showPassengers(passengers, rule, timeout){
+    this.stage.innerHTML = "";
+    const selected = new Set();
+    const grid = el("div", { class: "ticket-grid" });
+
+        passengers.forEach(ps => {
+      const card = el("div", { class: "ticket" },
+        el("div", { class: "th" }, `Passageiro ${ps.trainNumber}`),
+        el("div", { class: "td" }, ps.destination),
+        el("div", { class: "tm" },
+          el("div", {}, el("span", { class: "k" }, "Horário"), ps.time),
+          el("div", {}, el("span", { class: "k" }, "Plataforma"), ps.platform),
+          el("div", {}, el("span", { class: "k" }, "Trem"), ps.trainNumber),
+          el("div", {}, el("span", { class: "k" }, "Tipo"), ps.trainType)
+        )
+      );
+
+      card.onclick = () => {
+        if (selected.has(ps.id)){ selected.delete(ps.id); card.classList.remove("sel"); }
+        else { selected.add(ps.id); card.classList.add("sel"); }
+      };
+
+      grid.appendChild(card);
+    });
+
+    const btn = el("button",
+      { class: "wood gold", style: "padding:12px 26px;font-size:14px;" },
+      "✓ Confirmar embarque"
+    );
+
+    this.stage.appendChild(el("div", {
+      style: "display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;"
+    },
+      el("div", { class: "station-board" },
+        el("div", { class: "head" }, "▸ ORDEM DE EMBARQUE"),
+        el("div", { class: "row" },
+          el("span", { class: "k" }, "REGRA"),
+          el("span", { class: "v" }, rule.text)
+        )
+      ),
+      grid,
+      btn
+    ));
+
+    const res = await this.awaitResponse({ timeout, buttons: [btn] });
+    return { selected, elapsed: res.rt };
+  }
+
+  static extras(trials){
+    const should = trials.filter(t => t.expected_response === "select");
+    const noGo = trials.filter(t => t.expected_response === "not_select");
+    const hits = should.filter(t => t.correct).length;
+    const cr = noGo.filter(t => t.correct).length;
+    const fp = noGo.filter(t => t.false_positive).length;
+    const om = should.filter(t => t.omission).length;
+    const rt = avg(trials.map(t => t.reaction_time_ms));
+
+    return [
+      { label: "Embarques corretos", value: `${hits}/${should.length}` },
+      { label: "Rejeições corretas", value: `${cr}/${noGo.length}` },
+      { label: "Falsos positivos", value: String(fp) },
+      { label: "Omissões", value: String(om) },
+      { label: "Tempo médio por rodada", value: fmtMs(rt) }
+    ];
+  }
+}
+const RULE_INFO = {
+  color: { id: "color", label: "COR",     desc: "Classifique pela COR do objeto." },
+  shape: { id: "shape", label: "FORMATO", desc: "Classifique pelo FORMATO do objeto." },
+  size:  { id: "size",  label: "TAMANHO", desc: "Classifique pelo TAMANHO do objeto." }
+};
+
+const STIM_COLORS = {
+  vermelho: "#d44a4a",
+  azul:     "#3b7dd8",
+  verde:    "#4ec28f"
+};
+
+const STIM_SHAPES = {
+  circulo:   "●",
+  quadrado:  "■",
+  estrela:   "★",
+  triangulo: "▲"
+};
+
+const STIM_SIZES = {
+  pequeno: "48px",
+  medio:   "82px",
+  grande:  "122px"
+};
+
+const OPTIONS = {
+  color: [
+    { id: "vermelho", label: "Vermelho", sym: "●", color: "#d44a4a" },
+    { id: "azul",     label: "Azul",     sym: "●", color: "#3b7dd8" },
+    { id: "verde",    label: "Verde",    sym: "●", color: "#4ec28f" }
+  ],
+  shape: [
+    { id: "circulo",   label: "Círculo",   sym: "●" },
+    { id: "quadrado",  label: "Quadrado",  sym: "■" },
+    { id: "estrela",   label: "Estrela",   sym: "★" },
+    { id: "triangulo", label: "Triângulo", sym: "▲" }
+  ],
+  size: [
+    { id: "pequeno", label: "Pequeno", sym: "▪" },
+    { id: "medio",   label: "Médio",   sym: "◼" },
+    { id: "grande",  label: "Grande",  sym: "⬛" }
+  ]
+};
+
+function randomStimulus(){
+  const colors = Object.keys(STIM_COLORS);
+  const shapes = Object.keys(STIM_SHAPES);
+  const sizes  = Object.keys(STIM_SIZES);
+  return {
+    color: colors[ri(0, colors.length - 1)],
+    shape: shapes[ri(0, shapes.length - 1)],
+    size:  sizes[ri(0, sizes.length - 1)]
+  };
+}
+
+function renderStimulus(stim){
+  return el("div", {
+    style:
+      `font-size:${STIM_SIZES[stim.size]};` +
+      `color:${STIM_COLORS[stim.color]};` +
+      `line-height:1;` +
+      `animation:pop .22s cubic-bezier(.2,1.4,.5,1) both;` +
+      `filter:drop-shadow(0 8px 14px rgba(0,0,0,.55));`
+  }, STIM_SHAPES[stim.shape]);
+}
+
+class JogoRegra extends BaseGame {
+  async run(){
+    const p = this.params;
+    const dims = ["color", "shape", "size"];
+
+    let seq;
+    if (p.blocks === 2){
+      seq = shuf(dims).slice(0, 2);
+    } else if (p.blocks === 3){
+      seq = shuf(dims);
+    } else {
+      const base = shuf(dims);
+      seq = [...base, base[0]];
+    }
+
+    let n = 0;
+
+    for (let b = 0; b < seq.length; b++){
+      if (this.aborted) return;
+
+      const dim = seq[b];
+      const rule = RULE_INFO[dim];
+
+      if (b > 0) await this.showSwitch(rule);
+      else await this.showIntro(rule);
+      if (this.aborted) return;
+
+      for (let i = 0; i < p.pb; i++){
+        if (this.aborted) return;
+        const stim = randomStimulus();
+        await this.runTrial(rule, dim, stim, b + 1, i, i === 0, ++n);
+      }
+    }
+  }
+
+  async showIntro(rule){
+    this.stage.innerHTML = "";
+
+    this.stage.appendChild(el("div", { class: "bench" },
+      el("div", { class: "phase rule", style: "border:none;background:none;padding:0;" },
+        el("div", { class: "tag", style: "text-align:center;display:block;margin-bottom:8px;" }, "Bancada · regra inicial"),
+        el("div", {
+          class: "txt",
+          style: "text-align:center;"
+        }, "Cada objeto tem cor, formato e tamanho. Só uma característica importa.")
+      ),
+      el("div", { class: "rule-strip" },
+        el("div", { class: "k" }, "Regra"),
+        el("div", { class: "v" }, rule.desc)
+      ),
+      el("button", {
+        class: "wood gold", id: "rgOk",
+        style: "padding:12px 26px;font-size:14px;"
+      }, "Entendi, começar")
+    ));
+
+    await new Promise(res => {
+      const b = $("#rgOk");
+      b.addEventListener("click", res, { once: true });
+      this._cleanups.add([() => b.removeEventListener("click", res)]);
+    });
+  }
+
+  async showSwitch(rule){
+    this.stage.innerHTML = "";
+
+    const flashOverlay = el("div", { class: "rule-flash" },
+      el("div", { class: "ban" }, "🔄 NOVA REGRA")
+    );
+
+    this.stage.appendChild(el("div", {
+      class: "bench",
+      style: "border-color:rgba(240,182,74,.4);position:relative;"
+    },
+      el("div", { class: "phase rule", style: "border:none;background:none;padding:0;" },
+        el("div", {
+          class: "tag",
+          style: "text-align:center;display:block;margin-bottom:8px;color:var(--gold);"
+        }, "Nova regra"),
+        el("div", {
+          class: "txt",
+          style: "text-align:center;"
+        }, "A regra mudou. Ignore a característica anterior.")
+      ),
+      el("div", {
+        class: "rule-strip",
+        style: "background:rgba(240,182,74,.08);border-color:rgba(240,182,74,.3);"
+      },
+        el("div", { class: "k", style: "color:var(--gold);" }, "Regra"),
+        el("div", { class: "v" }, rule.desc)
+      ),
+      flashOverlay
+    ));
+
+    await this.wait(1500);
+  }
+
+  async runTrial(rule, dim, stim, blockNum, trialInBlock, first, n){
+    const p = this.params;
+    this.stage.innerHTML = "";
+    await this.wait(p.isi);
+    if (this.aborted) return;
+    this.stage.innerHTML = "";
+
+    const display = renderStimulus(stim);
+    const options = OPTIONS[dim];
+    const expected = stim[dim];
+
+    const optGrid = el("div", { class: "bench-opts" });
+    const buttons = options.map((op, i) => {
+      const sym = el("span", {
+        class: "sym",
+        style: op.color ? `color:${op.color};` : ""
+      }, op.sym);
+
+      const b = el("button", {
+        class: "bench-opt",
+        dataset: { value: op.id }
+      },
+        sym,
+        el("span", {}, op.label),
+        el("span", { class: "kb" }, String(i + 1))
+      );
+
+      optGrid.appendChild(b);
+      return b;
+    });
+
+    this.stage.appendChild(el("div", { class: "bench" },
+      el("div", { class: "phase rule", style: "border:none;background:none;padding:0;" },
+        el("div", {
+          class: "tag",
+          style: "text-align:center;display:block;margin-bottom:8px;"
+        }, `Bloco ${blockNum} · ${trialInBlock + 1}`),
+        el("div", { class: "txt", style: "text-align:center;" }, rule.desc)
+      ),
+      el("div", { class: "rule-strip" },
+        el("div", { class: "k" }, "Regra"),
+        el("div", { class: "v" }, rule.label)
+      ),
+      display,
+      optGrid
+    ));
+
+    const keyMap = {};
+    buttons.forEach((b, i) => { keyMap[String(i + 1)] = b.dataset.value; });
+
+    const res = await this.awaitResponse({
+      timeout: p.resp,
+      keyMap,
+      buttons
+    });
+
+    const responded = res.responded;
+    const correct = responded && res.response === expected;
+
+    this.record({
+      trial_number: n,
+      block_number: blockNum,
+      stimulus: `${stim.color} / ${stim.shape} / ${stim.size}`,
+      color: stim.color,
+      shape: stim.shape,
+      size: stim.size,
+      active_rule: rule.id,
+      expected_response: expected,
+      actual_response: res.response,
+      correct,
+      omission: !responded,
+      false_positive: false,
+      reaction_time_ms: responded ? res.rt : null,
+      rule_id: rule.id,
+      rule_description: rule.label,
+      is_first_after_switch: first
+    });
+
+    debugMsg(`T${n} rule=${rule.id} stim=${stim.color}/${stim.shape}/${stim.size} exp=${expected} resp=${res.response}`);
+    flash(correct);
+    await this.wait(180);
+  }
+
+  static extras(trials){
+    const first = trials.filter(t => t.is_first_after_switch);
+    const stable = trials.filter(t => !t.is_first_after_switch);
+    const aF = first.length ? first.filter(t => t.correct).length / first.length : null;
+    const aS = stable.length ? stable.filter(t => t.correct).length / stable.length : null;
+    const rtF = avg(first.filter(t => t.correct && t.reaction_time_ms != null).map(t => t.reaction_time_ms));
+    const rtS = avg(stable.filter(t => t.correct && t.reaction_time_ms != null).map(t => t.reaction_time_ms));
+    const rts = trials.filter(t => t.correct && t.reaction_time_ms != null).map(t => t.reaction_time_ms);
+
+    const byRule = ["color", "shape", "size"].map(dim => {
+      const sub = trials.filter(t => t.active_rule === dim);
+      if (!sub.length) return null;
+      const acc = sub.filter(t => t.correct).length / sub.length;
+      return `${dim}: ${fmtPct(acc)} (${sub.length})`;
+    }).filter(Boolean).join(" · ");
+
+    return [
+      { label: "Precisão no 1º trial após mudança", value: fmtPct(aF) },
+      { label: "Precisão em trials estáveis", value: fmtPct(aS) },
+      { label: "RT no 1º trial após mudança", value: fmtMs(rtF) },
+      { label: "RT em trials estáveis", value: fmtMs(rtS) },
+      { label: "RT médio geral (acertos)", value: fmtMs(avg(rts)) },
+      { label: "Desempenho por dimensão", value: byRule || "—" }
+    ];
+  }
+}
+
+ class JogoStroop extends BaseGame {
+  async run(){
+    const p = this.params;
+    const nC = Math.round(p.trials * p.cr);
+    const nI = p.trials - nC;
+
+    const seq = shuf([
+      ...Array(nC).fill("congruent"),
+      ...Array(nI).fill("incongruent")
+    ]);
+
+    for (let i = 0; i < seq.length; i++){
+      if (this.aborted) return;
+      await this.runTrial(seq[i], i, seq.length);
+    }
+  }
+
+  async runTrial(condition, idx, total){
+    const p = this.params;
+    const ink = CORES[ri(0, CORES.length - 1)];
+    let word;
+
+    if (condition === "congruent") word = ink;
+    else { do { word = CORES[ri(0, CORES.length - 1)]; } while (word.id === ink.id); }
+
+    this.stage.innerHTML = "";
+    await this.wait(p.isi);
+    if (this.aborted) return;
+    this.stage.innerHTML = "";
+
+        const inkLayer = el("div", { class: "canvas-ink" });
+    inkLayer.style.background = ink.hex;
+    inkLayer.style.animation = `inkDrip ${p.resp}ms linear forwards`;
+
+    const paper = el("div", { class: "canvas" },
+      inkLayer,
+      el("div", { class: "stroop-word", style: `color:${ink.hex};` }, word.nome)
+    );
+
+    const opts = shuf(CORES);
+    const grid = el("div", { class: "paint-row" });
+
+    const buttons = opts.map((op, i) => {
+      const b = el("button", { class: "paint", dataset: { value: op.id } },
+        el("span", { class: "sw", style: `background:${op.hex};` }),
+        el("span", {}, op.nome),
+        el("span", { class: "kb" }, String(i + 1))
+      );
+      grid.appendChild(b);
+      return b;
+    });
+
+    this.stage.appendChild(el("div", {
+      style: "display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;"
+    },
+      el("div", { class: "phase stroop" },
+        el("div", { class: "tag" }, `Tentativa ${idx + 1} / ${total}`),
+        el("div", { class: "txt" }, "Diga a cor da tinta antes que ela escorra.")
+      ),
+      paper,
+      grid
+    ));
+
+    const keyMap = {};
+    buttons.forEach((b, i) => { keyMap[String(i + 1)] = b.dataset.value; });
+
+    const res = await this.awaitResponse({ timeout: p.resp, keyMap, buttons });
+    const responded = res.responded;
+    const correct = responded && res.response === ink.id;
+    const isTimeout = !responded;
+
+    this.record({
+      trial_number: idx + 1,
+      stimulus: `"${word.nome}" escrito em ${ink.nome}`,
+      expected_response: ink.id,
+      actual_response: res.response,
+      correct,
+      omission: isTimeout,
+      false_positive: false,
+      timeout: isTimeout,
+      reaction_time_ms: responded ? res.rt : null,
+      condition,
+      word: word.id,
+      ink_color: ink.id
+    });
+
+    debugMsg(`T${idx + 1} cond=${condition} word=${word.nome} ink=${ink.nome} timeout=${isTimeout}`);
+    flash(correct);
+    await this.wait(200);
+  }
+
+  static extras(trials){
+    const c = trials.filter(t => t.condition === "congruent");
+    const i = trials.filter(t => t.condition === "incongruent");
+    const aC = c.length ? c.filter(t => t.correct).length / c.length : null;
+    const aI = i.length ? i.filter(t => t.correct).length / i.length : null;
+    const rtC = avg(c.filter(t => t.correct && t.reaction_time_ms != null).map(t => t.reaction_time_ms));
+    const rtI = avg(i.filter(t => t.correct && t.reaction_time_ms != null).map(t => t.reaction_time_ms));
+    const dif = (rtI != null && rtC != null) ? rtI - rtC : null;
+    const timeouts = trials.filter(t => t.timeout).length;
+
+    return [
+      { label: "Acurácia congruente", value: fmtPct(aC) },
+      { label: "Acurácia incongruente", value: fmtPct(aI) },
+      { label: "RT congruente", value: fmtMs(rtC) },
+      { label: "RT incongruente", value: fmtMs(rtI) },
+      { label: "Diferença (incong − cong)", value: fmtMs(dif) },
+      { label: "Timeouts (tinta escorreu)", value: String(timeouts) }
+    ];
+  }
+}
+/* parte 5 */
+const REGISTRY = {
+  lista: JogoLista,
+  sapo: JogoSapo,
+  estacao: JogoEstacao,
+  regra: JogoRegra,
+  stroop: JogoStroop
+};
+
+const Session = {
+  current: null,
+  running: null,
+  aborted: false,
+
+  abort(){
+    this.aborted = true;
+    if (this.running){ this.running.abort(); this.running = null; }
+  },
+
+  async startSession(code){
+    this.aborted = false;
+    this.current = {
+      session_id: uid("SESS"),
+      participant_id: code || null,
+      timestamp: new Date().toISOString(),
+      difficulty: DB.settings.difficulty,
+      games: []
+    };
+    go("game");
+    await this.runAll();
+  },
+
+  async runSingleDemo(gameId){
+    this.aborted = false;
+    this.current = {
+      session_id: uid("DEMO"),
+      participant_id: "DEMO",
+      timestamp: new Date().toISOString(),
+      difficulty: DB.settings.difficulty,
+      games: [],
+      demo: true
+    };
+    go("game");
+    const def = GAMES.find(g => g.id === gameId);
+    if (!def) return;
+    renderTrail(-1);
+    setScene(def.palette);
+
+    await showInstructions(def);
+    if (this.aborted) return;
+    await showCountdown();
+    if (this.aborted) return;
+    await this.playGame(def);
+    if (this.aborted) return;
+
+    const last = this.current.games[this.current.games.length - 1];
+    await showGameResult(def, last.summary, true);
+  },
+
+  async runAll(){
+    await showSessionIntro();
+    if (this.aborted) return;
+
+    for (let i = 0; i < GAMES.length; i++){
+      if (this.aborted) return;
+      renderTrail(i);
+
+      const def = GAMES[i];
+      setScene(def.palette);
+
+      await showInstructions(def);
+      if (this.aborted) return;
+      await showCountdown();
+      if (this.aborted) return;
+      await this.playGame(def);
+      if (this.aborted) return;
+
+      const last = this.current.games[this.current.games.length - 1];
+      await showGameResult(def, last.summary);
+      if (this.aborted) return;
+    }
+
+    renderTrail(GAMES.length);
+    await showFinalSummary();
+  },
+
+  async playGame(def){
+    const stage = $("#stage");
+    const params = PARAMS[def.id][DB.settings.difficulty];
+    const GameClass = REGISTRY[def.id];
+    const game = new GameClass(stage, params);
+    this.running = game;
+
+    try { await game.run(); }
+    catch(e){ console.error("Erro em", def.id, e); }
+
+    this.running = null;
+    const trials = game.trials.slice();
+    const summary = computeSummary(def, trials);
+
+    this.current.games.push({
+      game_id: def.id,
+      game_name: def.name,
+      difficulty: DB.settings.difficulty,
+      trials,
+      summary
+    });
+  }
+};
+
+function renderTrail(current){
+  const wrap = $("#hudTrail");
+  wrap.innerHTML = "";
+
+  GAMES.forEach((g, i) => {
+    let cls = "tdot";
+    if (i < current) cls += " done";
+    if (i === current) cls += " active";
+    wrap.appendChild(el("div", { class: cls, title: g.name }, g.emoji));
+  });
+}
+
+function setScene(palette){
+  const s = $("#scene");
+  s.className = "scene" + (palette ? " " + palette : "");
+}
+
+async function showSessionIntro(){
+  const stage = $("#stage");
+  stage.innerHTML = "";
+  setScene("shop");
+
+  stage.appendChild(el("div", { class: "plate", style: "max-width:520px;" },
+    el("h3", {}, "Sessão experimental"),
+    el("p", {
+      style: "font-size:14px;color:#3a2a1a;line-height:1.6;margin-bottom:14px;"
+    }, "Cinco tarefas curtas. Leia as instruções com atenção e responda com precisão."),
+    el("div", { class: "go" },
+      el("button", { class: "wood gold", id: "introOk" }, "▶ Iniciar")
+    )
+  ));
+
+  await new Promise(res => {
+    const b = $("#introOk");
+    b.addEventListener("click", res, { once: true });
+  });
+}
+
+async function showInstructions(def){
+  const stage = $("#stage");
+  stage.innerHTML = "";
+
+  const steps = INSTRUCTIONS[def.id].map((html, i) =>
+    el("div", { class: "step" },
+      el("span", { class: "n" }, String(i + 1)),
+      el("div", { html })
+    )
+  );
+
+  stage.appendChild(el("div", { class: "plate" },
+    el("h3", {}, `${def.emoji} ${def.name}`),
+    ...steps,
+    el("div", { class: "go" },
+      el("button", { class: "wood gold", id: "instrOk" }, "Entendi → começar")
+    )
+  ));
+
+  await new Promise(res => {
+    const b = $("#instrOk");
+    b.addEventListener("click", res, { once: true });
+  });
+}
+
+async function showCountdown(){
+  const stage = $("#stage");
+  stage.innerHTML = "";
+
+  const wrap = el("div", { class: "cd" });
+  stage.appendChild(wrap);
+
+  for (const n of ["3", "2", "1"]){
+    if (Session.aborted) return;
+    wrap.innerHTML = "";
+    wrap.appendChild(el("div", { class: "cd-num" }, n));
+    wrap.appendChild(el("div", { class: "cd-lbl" }, "Prepare-se"));
+    await new Promise(res => setTimeout(res, 700));
+  }
+
+  if (Session.aborted) return;
+  wrap.innerHTML = "";
+  wrap.appendChild(el("div", { class: "cd-num go" }, "COMEÇAR"));
+  await new Promise(res => setTimeout(res, 650));
+}
+
+function computeSummary(def, trials){
+  const total = trials.length;
+  const correct = trials.filter(t => t.correct).length;
+  const omissions = trials.filter(t => t.omission).length;
+  const falsePos = trials.filter(t => t.false_positive).length;
+  const rts = trials.filter(t => t.reaction_time_ms != null && t.correct).map(t => t.reaction_time_ms);
+  const acc = total ? correct / total : 0;
+  const extras = REGISTRY[def.id].extras(trials);
+
+  return {
+    total,
+    correct,
+    errors: total - correct,
+    omissions,
+    falsePos,
+    accuracy: acc,
+    meanRT: avg(rts),
+    extras
+  };
+}
+
+async function showGameResult(def, summary, isDemo){
+  const stage = $("#stage");
+  stage.innerHTML = "";
+
+  const stats = [
+    { k: "Acertos",       v: `${summary.correct}/${summary.total}`, cls: "g" },
+    { k: "Erros",         v: String(summary.errors),                cls: summary.errors ? "b" : "" },
+    { k: "Omissões",      v: String(summary.omissions),             cls: summary.omissions ? "b" : "" },
+    { k: "Falsos pos.",   v: String(summary.falsePos),              cls: summary.falsePos ? "b" : "" },
+    { k: "RT médio",      v: fmtMs(summary.meanRT),                 cls: "" }
+  ];
+
+  stage.appendChild(el("div", { class: "report" },
+    el("div", { class: "report-head" },
+      el("div", { class: "ic" }, def.emoji),
+      el("div", {},
+        el("h3", {}, `${def.name} · concluído`),
+        el("div", { class: "sub" }, def.focus.toUpperCase())
+      ),
+      el("div", { class: "acc" }, fmtPct(summary.accuracy))
+    ),
+    el("div", { class: "rstats" }, stats.map(s =>
+      el("div", { class: "rstat" },
+        el("div", { class: "k" }, s.k),
+        el("div", { class: "v " + s.cls }, s.v)
+      )
+    )),
+    el("div", {}, summary.extras.map(e =>
+      el("div", { class: "rextra" },
+        el("span", { class: "k" }, e.label),
+        el("span", { class: "v" }, e.value)
+      )
+    )),
+    el("div", { class: "btn-row", style: "margin-top:20px;" },
+      el("button", { class: "wood gold", id: "nextBtn" },
+        isDemo ? "Voltar ao menu" : "Próximo desafio →"
+      )
+    )
+  ));
+
+  if (isDemo) DB.add(Session.current);
+
+  await new Promise(res => {
+    const b = $("#nextBtn");
+    b.addEventListener("click", () => {
+      if (isDemo){
+        go("menu");
+        Session.current = null;
+      }
+      res();
+    }, { once: true });
+  });
+}
+
+async function showFinalSummary(){
+  const stage = $("#stage");
+  stage.innerHTML = "";
+  setScene("rule");
+
+  DB.add(Session.current);
+  const s = Session.current;
+  const totalC = s.games.reduce((a, g) => a + g.summary.correct, 0);
+  const totalT = s.games.reduce((a, g) => a + g.summary.total, 0);
+  const acc = totalT ? totalC / totalT : 0;
+
+  stage.appendChild(el("div", { class: "report" },
+    el("div", { class: "report-head" },
+      el("div", { class: "ic" }, "🏁"),
+      el("div", {},
+        el("h3", {}, "Jornada concluída"),
+        el("div", { class: "sub" }, `ID: ${s.session_id} · ${fmtDate(s.timestamp)}`)
+      ),
+      el("div", { class: "acc" }, fmtPct(acc))
+    ),
+    el("p", {
+      style: "font-size:12px;color:#5a4a3a;line-height:1.6;margin-bottom:14px;"
+    }, "Cada tarefa enfatiza um processo cognitivo diferente. Os resultados referem-se apenas às tarefas realizadas e não constituem avaliação diagnóstica."),
+    el("div", {}, s.games.map(g => {
+      const def = GAMES.find(x => x.id === g.game_id);
+      return el("div", { class: "rextra" },
+        el("span", { class: "k" }, `${def.emoji} ${g.game_name}`),
+        el("span", { class: "v" }, `${fmtPct(g.summary.accuracy)} · ${g.summary.correct}/${g.summary.total}`)
+      );
+    })),
+    el("div", { class: "btn-row", style: "margin-top:20px;" },
+      el("button", { class: "wood", id: "histBtn" }, "Ver sessões"),
+      el("button", { class: "wood gold", id: "homeBtn" }, "Voltar ao início")
+    )
+  ));
+
+  $("#histBtn").addEventListener("click", () => {
+    go("history");
+    renderHistory();
+  }, { once: true });
+
+  $("#homeBtn").addEventListener("click", () => {
+    go("menu");
+    Session.current = null;
+  }, { once: true });
+}
+
+function startSession(){
+  modal({
+    title: "Código do participante (opcional)",
+    body: "Use um código que permita reconhecer suas sessões sem informar seu nome. Deixe em branco para gerar automaticamente.",
+    placeholder: "Ex.: PART-001",
+    withInput: true
+  }).then(r => {
+    if (!r.ok) return;
+    const code = (r.value || "").trim() || null;
+    Session.startSession(code);
+  });
+}
+
+function exitCurrentGame(){
+  if (!confirm("Sair desta tarefa? Os dados coletados até agora serão mantidos.")) return;
+  Session.abort();
+  go("menu");
+  Session.current = null;
+}
+
+function renderHall(){
+  const wrap = $("#hall");
+  wrap.innerHTML = "";
+
+  GAMES.forEach((g, i) => {
+    const z = el("div", { class: `zone ${g.palette}` },
+      el("div", { class: "zone-num" }, String(i + 1).padStart(2, "0")),
+      el("div", { class: "zone-emoji" }, g.emoji),
+      el("div", { class: "zone-info" },
+        el("div", { class: "zone-name" }, g.name),
+        el("div", { class: "zone-focus" }, g.focus)
+      )
+    );
+    z.onclick = () => Session.runSingleDemo(g.id);
+    wrap.appendChild(z);
+  });
+}
+
+function renderHow(){
+  const wrap = $("#howList");
+  wrap.innerHTML = "";
+
+  GAMES.forEach(g => {
+    const steps = INSTRUCTIONS[g.id].map((html, j) =>
+      el("div", { class: "step" },
+        el("span", { class: "n" }, String(j + 1)),
+        el("div", { html })
+      )
+    );
+
+    wrap.appendChild(el("div", {
+      style: "margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed rgba(139,94,60,.3);"
+    },
+      el("div", {
+        style: "font-weight:700;font-size:14.5px;color:#7a2222;margin-bottom:8px;"
+      }, `${g.emoji} ${g.name} · ${g.focus}`),
+      ...steps
+    ));
+  });
+}
+
+function renderSettings(){
+  const dr = $("#diffGrid");
+  dr.innerHTML = "";
+
+  Object.entries(DIFFS).forEach(([k, d]) => {
+    const sel = DB.settings.difficulty === k;
+    const b = el("button", {
+      class: "wood" + (sel ? " gold" : ""),
+      style: "text-align:left;padding:10px 14px;"
+    },
+      el("div", { style: "font-weight:700;" }, d.label),
+      el("div", {
+        style: "font-size:11px;opacity:.8;margin-top:3px;font-weight:500;text-transform:none;letter-spacing:0;"
+      }, d.desc)
+    );
+
+    b.onclick = () => {
+      DB.settings.difficulty = k;
+      DB.save();
+      renderSettings();
+    };
+    dr.appendChild(b);
+  });
+
+  const gr = $("#dbgGrid");
+  gr.innerHTML = "";
+
+  [["0", "Desligado"], ["1", "Ligado"]].forEach(([val, label]) => {
+    const isOn = (val === "1") === !!DB.settings.debug;
+    const b = el("button", { class: "wood" + (isOn ? " gold" : "") }, label);
+    b.onclick = () => {
+      DB.settings.debug = val === "1";
+      DEBUG = !!DB.settings.debug;
+      DB.save();
+      renderSettings();
+    };
+    gr.appendChild(b);
+  });
+}
+
+function renderHistory(){
+  const wrap = $("#histList");
+  wrap.innerHTML = "";
+
+  if (!DB.sessions.length){
+    wrap.appendChild(el("div", { class: "empty" }, "📭 Nenhuma sessão registrada ainda."));
+    return;
+  }
+
+  DB.sessions.forEach(s => {
+    const totalC = (s.games || []).reduce((a, g) => a + (g.summary?.correct || 0), 0);
+    const totalT = (s.games || []).reduce((a, g) => a + (g.summary?.total || 0), 0);
+    const acc = totalT ? totalC / totalT : 0;
+
+    const det = el("details", { class: "note" });
+    det.appendChild(el("summary", {},
+      el("span", { class: "note-code" }, s.participant_id || s.session_id),
+      el("span", { class: "note-date" }, fmtDate(s.timestamp)),
+      el("span", { class: "note-acc" }, `${fmtPct(acc)} · ${totalC}/${totalT}`)
+    ));
+
+    const body = el("div", { class: "note-body" });
+
+    (s.games || []).forEach(g => {
+      const def = GAMES.find(x => x.id === g.game_id);
+      body.appendChild(el("div", { class: "note-row" },
+        el("span", {}, `${def ? def.emoji : "•"} ${g.game_name}`),
+        el("span", { class: "v" },
+          `${fmtPct(g.summary?.accuracy || 0)} · ${g.summary?.correct || 0}/${g.summary?.total || 0}`)
+      ));
+    });
+
+    det.appendChild(body);
+    wrap.appendChild(det);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  DB.load();
+  DEBUG = !!DB.settings.debug;
+
+  renderHall();
+  renderHow();
+  renderSettings();
+  renderHistory();
+
+  $("#btnSession").addEventListener("click", startSession);
+  $("#btnHow").addEventListener("click", () => go("how"));
+  $("#btnHistory").addEventListener("click", () => { go("history"); renderHistory(); });
+  $("#btnSettings").addEventListener("click", () => { go("settings"); renderSettings(); });
+
+  $("#btnExportCsv").addEventListener("click", exportCSV);
+  $("#btnExportJson").addEventListener("click", exportJSON);
+  $("#btnClear").addEventListener("click", clearAll);
+
+  $("#btnExit").addEventListener("click", exitCurrentGame);
+
+  $$("[data-nav]").forEach(b => b.addEventListener("click", () => go(b.dataset.nav)));
+
+  console.log("🧠 Desafios Cognitivos — pronto. DEBUG =", DEBUG);
+});
+</script>
+</body>
+</html>
+  
