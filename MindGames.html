@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Desafios Cognitivos</title>
 <style>
-/* ============================================================
-   BASE
-   ============================================================ */
 :root{
   --bg:#0d1018;--panel:#141a26;--line:#232a3a;
   --txt:#e8ecf5;--dim:#9aa4bb;--mut:#5a6478;
@@ -26,11 +23,11 @@ body{
 button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;}
 h1,h2,h3{font-weight:700;}
 
-/*TELAS*/
+/*modelo das telas*/
 .screen{display:none;position:fixed;inset:0;overflow-y:auto;}
 .screen.on{display:block;}
 
-/* MENU  ESTAÇÃO DOS DESAFIOS */
+/* menu estaçao dos desafios */
 #menu{
   background:
     radial-gradient(ellipse at 50% -20%,rgba(240,182,74,.15),transparent 60%),
@@ -113,7 +110,7 @@ h1,h2,h3{font-weight:700;}
 
 .menu-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
 
-/* BOTÕES*/
+/* botoes*/
 .wood{
   padding:10px 20px;
   background:linear-gradient(180deg,#a87a4a,#7a5230);
@@ -165,7 +162,7 @@ h1,h2,h3{font-weight:700;}
 }
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:20px;}
 
-/*  JOGO */
+/*  jogo */
 #game{background:#0a0d14;}
 .scene{position:absolute;inset:0;overflow:hidden;transition:background .4s;}
 .scene.shop{
